@@ -1,0 +1,4 @@
+opencv-python
+RPi.GPIO
+picamera
+Flask
