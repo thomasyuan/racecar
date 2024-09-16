@@ -16,32 +16,15 @@
 
 ## Run the app
 
+## Install opencv-python
+
+Seems either pi zero doesn't have enough power, or there is a bug (even pi 3 seems stuck as well). When install opencv-python, it will stuck on building. Some one figured that install with version number seems can fix the building stuck issue.
+`pip install opencv-python==4.10.0.84`
+
+Need install `sudo apt install pypy3-dev`
+
+> https://github.com/opencv/opencv-python/issues/391
+
 ## Shell do everything.
 
-```code=bash
-#!/bin/bash
-
-# Update system to latest
-sudo apt update && sudo apt upgrade -y
-
-# Install libcamera, virtualenv and git
-sudo apt install -y libcamera-apps python3-venv git
-
-# Clone the project
-git clone git@github.com:thomas/racecar.git
-cd racecar
-
-# Create a Virtual Environment
-python3 -m venv venv
-
-# Activate the Virtual Environment
-source venv/bin/activate
-
-# Upgrade pip
-pip install --upgrade pip
-
-# Install necessary packages
-pip install -r requirements.txt
-
-echo "Setup complete. You can now run the app using 'python app.py'."
-```
+`setup.sh`
