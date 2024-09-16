@@ -1,24 +1,32 @@
-from flask import Flask, Response
+from flask import Flask, send_file
 import cv2
 
 app = Flask(__name__)
 
-def generate_frames():
+def capture_image():
     camera = cv2.VideoCapture(0)
-    while True:
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    if not camera.isOpened():
+        print("Error: Could not open camera.")
+        return None
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    ret, frame = camera.read()
+    if not ret:
+        print("Error: Could not read frame.")
+        return None
+
+    # Save the captured image to a file
+    image_path = 'captured_image.jpg'
+    cv2.imwrite(image_path, frame)
+    camera.release()
+    return image_path
+
+@app.route('/capture')
+def capture():
+    image_path = capture_image()
+    if image_path:
+        return send_file(image_path, mimetype='image/jpeg')
+    else:
+        return "Failed to capture image", 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
