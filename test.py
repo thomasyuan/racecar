@@ -2,7 +2,9 @@
 # https://www.electronicshub.org/raspberry-pi-l298n-interface-tutorial-control-dc-motor-l298n-raspberry-pi/
 
 import RPi.GPIO as GPIO
+import time
 from time import sleep
+from gpiozero import DistanceSensor
 
 in1 = 17
 in2 = 27
@@ -14,18 +16,10 @@ en2 = 25
 TRIG = 5
 ECHO = 6
 
+sensor = DistanceSensor(echo=ECHO, trigger=TRIG)
+
 def read_ultrasonic_sensor():
-    GPIO.output(TRIG, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIG, False)
-
-    while GPIO.input(ECHO) == 0:
-        pulse_start = time.time()
-    while GPIO.input(ECHO) == 1:
-        pulse_end = time.time()
-
-    pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150
+    distance = sensor.distance * 100
     distance = round(distance, 2)
     return distance
 
@@ -72,7 +66,7 @@ def turn_right():
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
-    sleep(0.5)
+    #sleep(0.5)
 
 def turn_left():
     stop_internal()
@@ -105,8 +99,6 @@ def initialize_gpio():
     GPIO.setup(in4, GPIO.OUT)
     GPIO.setup(en1, GPIO.OUT)
     GPIO.setup(en2, GPIO.OUT)
-    GPIO.setup(TRIG, GPIO.OUT)
-    GPIO.setup(ECHO, GPIO.IN)
 
     global pwm1, pwm2, direction
     pwm1 = GPIO.PWM(en1, 1000)  # PWM frequency 1000 Hz
@@ -118,6 +110,7 @@ def initialize_gpio():
 def usage():
     print("Usage:")
     print("p: Power on")
+    print("a: Auto mode")
     print("f: Go forward")
     print("b: Go backward")
     print("l: Turn left")
@@ -136,7 +129,7 @@ def main():
             x = input("Enter command: ")
             if x == 'p':
                 print("Power on")
-                set_speed(100)
+                set_speed(70)
             if x == 's':
                 print("Stop")
                 stop()
@@ -156,7 +149,7 @@ def main():
                 continue_running()
             elif x == 'm':
                 print("Medium speed")
-                set_speed(50)
+                set_speed(70)
             elif x == 'h':
                 print("High speed")
                 set_speed(100)
@@ -165,13 +158,17 @@ def main():
                 break
             elif x == 'a':
                 print("auto mode")
-                while True:
-                    distance = read_ultrasonic_sensor()
-                    print(f"Distance: {distance} cm")
-                    if distance < 30:
-                        turn_right()
-                    else:
-                        go_forward()
+                go_forward()
+                try:
+                    while True:
+                        distance = read_ultrasonic_sensor()
+                        print(f"distance {distance} cm")
+                        if distance < 30:
+                            turn_right()
+                        else:
+                            continue_running()
+                except KeyboardInterrupt:
+                    print("Measurement stopped by User")
             else:
                 print("Invalid command")
     except KeyboardInterrupt:
