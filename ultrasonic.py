@@ -23,3 +23,18 @@ def read_ultrasonic_sensor():
     distance = pulse_duration * 17150
     distance = round(distance, 2)
     return distance
+
+def main():
+    try:
+        initialize_ultrasonic()
+        while True:
+            distance = read_ultrasonic_sensor()
+            print(f"Distance: {distance} cm")
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("Measurement stopped by User")
+    finally:
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    main()
