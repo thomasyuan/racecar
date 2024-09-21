@@ -1,22 +1,22 @@
-# Python Script
-# https://www.electronicshub.org/raspberry-pi-l298n-interface-tutorial-control-dc-motor-l298n-raspberry-pi/
-
-import RPi.GPIO as GPIO
-import time
+from gpiozero import DistanceSensor, Motor, PWMOutputDevice
 from time import sleep
-from gpiozero import DistanceSensor
 
-in1 = 17
-in2 = 27
-in3 = 23
-in4 = 24
-en1 = 4
+# Define GPIO pins
 en2 = 25
 
 TRIG = 5
 ECHO = 6
 
+# Initialize DistanceSensor
 sensor = DistanceSensor(echo=ECHO, trigger=TRIG)
+
+# Initialize Motors
+motor_left = Motor(forward=17, backward=27)
+motor_right = Motor(forward=23, backward=24)
+
+# Initialize PWM for speed control
+pwm_left = PWMOutputDevice(4)
+pwm_right = PWMOutputDevice(25)
 
 def read_ultrasonic_sensor():
     distance = sensor.distance * 100
@@ -24,14 +24,12 @@ def read_ultrasonic_sensor():
     return distance
 
 def set_speed(duty_cycle):
-    pwm1.ChangeDutyCycle(duty_cycle)
-    pwm2.ChangeDutyCycle(duty_cycle)
+    pwm_left.value = duty_cycle / 100
+    pwm_right.value = duty_cycle / 100
 
 def stop_internal():
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.LOW)
+    motor_left.stop()
+    motor_right.stop()
 
 def stop():
     global direction
@@ -39,100 +37,53 @@ def stop():
     stop_internal()
 
 def go_forward():
-    stop_internal()
     global direction
-    if direction == -1:
-        sleep(0.5)
     direction = 1
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
+    motor_left.forward()
+    motor_right.forward()
 
 def go_backward():
-    stop_internal()
     global direction
-    if direction == 1:
-        sleep(0.5)
     direction = -1
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
-
-def turn_right():
-    stop_internal()
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
-    #sleep(0.5)
+    motor_left.backward()
+    motor_right.backward()
 
 def turn_left():
+    motor_left.backward()
+    motor_right.forward()
+    sleep(0.2)
     stop_internal()
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
-    sleep(0.5)
 
-def continue_running():
+def turn_right():
+    motor_left.forward()
+    motor_right.backward()
+    sleep(0.2)
     stop_internal()
-    if direction == 1:
-        go_forward()
-    elif direction == -1:
-        go_backward()
-    else:
-        stop()
-
-def initialize_gpio():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(in1,GPIO.OUT)
-    GPIO.setup(in2,GPIO.OUT)
-    GPIO.setup(in3,GPIO.OUT)
-    GPIO.setup(in4,GPIO.OUT)
-    GPIO.setup(en1,GPIO.OUT)
-    GPIO.setup(en2,GPIO.OUT)
-    GPIO.setup(in1, GPIO.OUT)
-    GPIO.setup(in2, GPIO.OUT)
-    GPIO.setup(in3, GPIO.OUT)
-    GPIO.setup(in4, GPIO.OUT)
-    GPIO.setup(en1, GPIO.OUT)
-    GPIO.setup(en2, GPIO.OUT)
-
-    global pwm1, pwm2, direction
-    pwm1 = GPIO.PWM(en1, 1000)  # PWM frequency 1000 Hz
-    pwm2 = GPIO.PWM(en2, 1000)  # PWM frequency 1000 Hz
-    pwm1.start(0)
-    pwm2.start(0)
-    direction = 0
 
 def usage():
     print("Usage:")
     print("p: Power on")
-    print("a: Auto mode")
     print("f: Go forward")
     print("b: Go backward")
     print("l: Turn left")
     print("r: Turn right")
     print("s: Stop")
-    print("m: Medium speed")
-    print("h: High speed")
-    print("q: Quit")
+    print("e: Exit")
 
 def main():
     try:
-        initialize_gpio()
         usage()
 
         while True:
             x = input("Enter command: ")
+
             if x == 'p':
                 print("Power on")
-                set_speed(70)
-            if x == 's':
-                print("Stop")
+                set_speed(100)  # Full speed
+            elif x == 's':
+                print("Stopping")
                 stop()
+                set_speed(0)  # Stop PWM
             elif x == 'f':
                 print("Going forward")
                 go_forward()
@@ -142,14 +93,11 @@ def main():
             elif x == 'l':
                 print("Turning left")
                 turn_left()
-                continue_running()
+                go_forward()
             elif x == 'r':
                 print("Turning right")
                 turn_right()
-                continue_running()
-            elif x == 'm':
-                print("Medium speed")
-                set_speed(70)
+                go_forward()
             elif x == 'h':
                 print("High speed")
                 set_speed(100)
@@ -162,21 +110,20 @@ def main():
                 try:
                     while True:
                         distance = read_ultrasonic_sensor()
-                        print(f"distance {distance} cm")
+                        print(f"Distance: {distance} cm")
                         if distance < 30:
                             turn_right()
-                        else:
-                            continue_running()
+                            go_forward()  # Continue moving forward after turning
+                        sleep(0.1)  # Add a small delay to stabilize the loop
                 except KeyboardInterrupt:
                     print("Measurement stopped by User")
+                    stop()
             else:
                 print("Invalid command")
     except KeyboardInterrupt:
         print("Measurement stopped by User")
     finally:
-        pwm1.stop()
-        pwm2.stop()
-        GPIO.cleanup()
+        stop()
 
 if __name__ == "__main__":
     main()
