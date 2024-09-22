@@ -13,6 +13,7 @@
   - Activate the Virtual Environment: `source venv/bin/activate`
   - upgrade pip `pip install --upgrade pip`
   - Install Requirements: `pip install -r requirements.txt`
+  - `sudo apt install python3-smbus i2c-tools`
 
 ## Run the app
 

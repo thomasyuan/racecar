@@ -1,11 +1,13 @@
-from gpiozero import DistanceSensor, Motor, PWMOutputDevice
+from gpiozero import DistanceSensor, Motor, PWMOutputDevice, Servo
+import smbus
 from time import sleep
 
 # Define GPIO pins
-en2 = 25
-
 TRIG = 5
 ECHO = 6
+SERVO_PIN = 18
+I2C_BUS = 1
+IMU_ADDRESS = 0x68  # Example I2C address for MPU6050
 
 # Initialize DistanceSensor
 sensor = DistanceSensor(echo=ECHO, trigger=TRIG)
@@ -17,6 +19,19 @@ motor_right = Motor(forward=23, backward=24)
 # Initialize PWM for speed control
 pwm_left = PWMOutputDevice(4)
 pwm_right = PWMOutputDevice(25)
+
+# Initialize Servo
+servo = Servo(SERVO_PIN)
+
+# Initialize I2C for IMU
+bus = smbus.SMBus(I2C_BUS)
+
+def read_gyro():
+    # Example function to read gyro data from MPU6050
+    gyro_x = bus.read_byte_data(IMU_ADDRESS, 0x43)
+    gyro_y = bus.read_byte_data(IMU_ADDRESS, 0x45)
+    gyro_z = bus.read_byte_data(IMU_ADDRESS, 0x47)
+    return gyro_x, gyro_y, gyro_z
 
 def read_ultrasonic_sensor():
     distance = sensor.distance * 100
@@ -118,6 +133,15 @@ def main():
                 except KeyboardInterrupt:
                     print("Measurement stopped by User")
                     stop()
+            elif x == 'g':
+                print("Reading gyro data continuously")
+                try:
+                    while True:
+                        gyro_x, gyro_y, gyro_z = read_gyro()
+                        print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
+                        sleep(0.1)  # Read every 0.1 second
+                except KeyboardInterrupt:
+                    print("Gyro reading stopped by User")
             else:
                 print("Invalid command")
     except KeyboardInterrupt:
