@@ -9,6 +9,20 @@ SERVO_PIN = 18
 I2C_BUS = 1
 IMU_ADDRESS = 0x68  # Example I2C address for MPU6050
 
+# MPU6050 Registers and their addresses
+PWR_MGMT_1 = 0x6B
+SMPLRT_DIV = 0x19
+CONFIG = 0x1A
+GYRO_CONFIG = 0x1B
+INT_ENABLE = 0x38
+GYRO_XOUT_H = 0x43
+GYRO_YOUT_H = 0x45
+GYRO_ZOUT_H = 0x47
+
+CALIBRATION_OFFSET_X = 0.189
+CALIBRATION_OFFSET_Y = 0.483
+CALIBRATION_OFFSET_Z = -0.344
+
 # Initialize DistanceSensor
 sensor = DistanceSensor(echo=ECHO, trigger=TRIG)
 
@@ -26,12 +40,46 @@ servo = Servo(SERVO_PIN)
 # Initialize I2C for IMU
 bus = smbus.SMBus(I2C_BUS)
 
+def MPU_Init():
+    # Write to sample rate register
+    bus.write_byte_data(IMU_ADDRESS, SMPLRT_DIV, 7)
+
+    # Write to power management register
+    bus.write_byte_data(IMU_ADDRESS, PWR_MGMT_1, 1)
+
+    # Write to Configuration register
+    bus.write_byte_data(IMU_ADDRESS, CONFIG, 0)
+
+    # Write to Gyro configuration register
+    bus.write_byte_data(IMU_ADDRESS, GYRO_CONFIG, 24)
+
+    # Write to interrupt enable register
+    bus.write_byte_data(IMU_ADDRESS, INT_ENABLE, 1)
+
+def read_raw_data(addr):
+    # Accelero and Gyro values are 16-bit
+    high = bus.read_byte_data(IMU_ADDRESS, addr)
+    low = bus.read_byte_data(IMU_ADDRESS, addr+1)
+
+    # Concatenate higher and lower value
+    value = ((high << 8) | low)
+
+    # To get signed value from mpu6050
+    if value > 32767:
+        value = value - 65536
+    return value
+
 def read_gyro():
     # Example function to read gyro data from MPU6050
-    gyro_x = bus.read_byte_data(IMU_ADDRESS, 0x43)
-    gyro_y = bus.read_byte_data(IMU_ADDRESS, 0x45)
-    gyro_z = bus.read_byte_data(IMU_ADDRESS, 0x47)
-    return gyro_x, gyro_y, gyro_z
+    gyro_x = read_raw_data(GYRO_XOUT_H)
+    gyro_y = read_raw_data(GYRO_YOUT_H)
+    gyro_z = read_raw_data(GYRO_ZOUT_H)
+
+    Gx = gyro_x / 131.0 - CALIBRATION_OFFSET_X
+    Gy = gyro_y / 131.0 - CALIBRATION_OFFSET_Y
+    Gz = gyro_z / 131.0 - CALIBRATION_OFFSET_Z
+
+    return Gx, Gy, Gz
 
 def read_ultrasonic_sensor():
     distance = sensor.distance * 100
@@ -89,6 +137,9 @@ def main():
     try:
         usage()
 
+        # Initialize MPU6050
+        MPU_Init()
+
         while True:
             x = input("Enter command: ")
 
@@ -139,9 +190,17 @@ def main():
                     while True:
                         gyro_x, gyro_y, gyro_z = read_gyro()
                         print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
-                        sleep(0.1)  # Read every 0.1 second
+                        sleep(0.01)  # Read every 0.01 second
                 except KeyboardInterrupt:
                     print("Gyro reading stopped by User")
+            elif x == 'v':
+                print("Controlling servo")
+                servo.value = 0  # Move servo to center position
+                sleep(1)
+                servo.value = 1  # Move servo to max position
+                sleep(1)
+                servo.value = -1  # Move servo to min position
+                sleep(1)
             else:
                 print("Invalid command")
     except KeyboardInterrupt:
