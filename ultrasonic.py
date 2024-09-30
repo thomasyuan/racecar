@@ -1,10 +1,9 @@
 from gpiozero import DistanceSensor
 from time import sleep
-from servo import set_servo_angle
 
 # Define GPIO pins for the ultrasonic sensor
-TRIG_PIN = 23  # GPIO 23
-ECHO_PIN = 24  # GPIO 24
+TRIG_PIN = 5  # GPIO 5
+ECHO_PIN = 6  # GPIO 6
 
 # Define threshold distance in cm
 DISTANCE_THRESHOLD = 0.3  # gpiozero uses meters
