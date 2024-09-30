@@ -64,7 +64,7 @@ def stop(message):
     stop_internal()
 
 def turn_left_internal():
-    # stop_internal()
+    stop_internal()
 
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in1, GPIO.LOW)
@@ -73,7 +73,7 @@ def turn_left_internal():
     #sleep(0.5)
 
 def turn_right_internal():
-    # stop_internal()
+    stop_internal()
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
@@ -93,7 +93,8 @@ def set_speed_internal(duty_cycle):
     pwm2.ChangeDutyCycle(duty_cycle)
 
 def continue_running(message):
-    stop_internal()
+    # stop_internal()
+    print(f"Continuing running {direction}")
     if direction == 1:
         go_forward(message)
     elif direction == -1:
