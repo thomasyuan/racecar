@@ -1,4 +1,3 @@
-import controller
 import smbus
 import time
 from utils import start_daemon_thread  # Import the start_daemon_thread function
@@ -17,16 +16,13 @@ GYRO_XOUT_H = 0x43
 GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
 
-# Set interval for main loop
-MAIN_LOOP_INTERVAL = 1
+# Calibration offsets (initially set to zero)
+CALIBRATION_OFFSET_X = 0.0
+CALIBRATION_OFFSET_Y = 0.0
+CALIBRATION_OFFSET_Z = 0.0
 
-# Set interval for monitor loop
-MONITOR_LOOP_INTERVAL = 0.1
-
-# Calibration offsets
-CALIBRATION_OFFSET_X = 0.18821109874011124
-CALIBRATION_OFFSET_Y = 0.48118037926727825
-CALIBRATION_OFFSET_Z = -0.3430691281628235
+# Gyro sensitivity (LSB/dps)
+GYRO_SENSITIVITY = 131.0  # Assuming ±250 dps
 
 # Initialize I2C bus
 bus = smbus.SMBus(I2C_BUS)
@@ -45,9 +41,9 @@ def initialize_gyro():
 
 def read_gyro_data():
     # Read raw gyro data
-    gyro_x = read_raw_data(GYRO_XOUT_H)
-    gyro_y = read_raw_data(GYRO_YOUT_H)
-    gyro_z = read_raw_data(GYRO_ZOUT_H)
+    gyro_x = read_raw_data(GYRO_XOUT_H) / GYRO_SENSITIVITY
+    gyro_y = read_raw_data(GYRO_YOUT_H) / GYRO_SENSITIVITY
+    gyro_z = read_raw_data(GYRO_ZOUT_H) / GYRO_SENSITIVITY
 
     # Apply calibration offsets
     gyro_x -= CALIBRATION_OFFSET_X
@@ -67,21 +63,40 @@ def read_raw_data(addr):
         value -= 65536
     return value
 
+def calibrate_gyro(samples=100):
+    global CALIBRATION_OFFSET_X, CALIBRATION_OFFSET_Y, CALIBRATION_OFFSET_Z
+    sum_x = 0
+    sum_y = 0
+    sum_z = 0
+    for _ in range(samples):
+        gyro_x, gyro_y, gyro_z = read_gyro_data()
+        sum_x += gyro_x
+        sum_y += gyro_y
+        sum_z += gyro_z
+        time.sleep(0.01)  # Small delay between samples
+    CALIBRATION_OFFSET_X = sum_x / samples
+    CALIBRATION_OFFSET_Y = sum_y / samples
+    CALIBRATION_OFFSET_Z = sum_z / samples
+    print(f"Calibration offsets: X={CALIBRATION_OFFSET_X}, Y={CALIBRATION_OFFSET_Y}, Z={CALIBRATION_OFFSET_Z}")
+
 def main():
     initialize_gyro()
+    calibrate_gyro()
     try:
         while True:
             gyro_x, gyro_y, gyro_z = read_gyro_data()
             print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
-            time.sleep(MAIN_LOOP_INTERVAL)
+            time.sleep(1)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
 
 def monitor_gyro():
     initialize_gyro()
+    calibrate_gyro()
     while True:
-        controller.handle_gyro(*read_gyro_data())
-        time.sleep(MONITOR_LOOP_INTERVAL)
+        gyro_x, gyro_y, gyro_z = read_gyro_data()
+        print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
+        time.sleep(0.1)
 
 def start_monitoring():
     start_daemon_thread(monitor_gyro)
