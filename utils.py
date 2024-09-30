@@ -1,3 +1,5 @@
+import threading
+
 def get_serial():
     try:
         with open('/proc/cpuinfo', 'r') as f:

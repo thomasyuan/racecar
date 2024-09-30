@@ -67,10 +67,8 @@ def start():
     start_daemon_thread(send_status_updates)
 
 def main():
-    start()
     try:
-        while True:
-            pass
+        send_status_updates()
     except KeyboardInterrupt:
         print("Exiting...")
         pubnub.unsubscribe_all()
