@@ -33,7 +33,8 @@ def set_speed(message):
     # Implement the logic to set the car's speed
 
 def go_forward(message):
-    stop_internal()
+    print("Going forward")
+    # stop_internal()
     # global direction
     # if direction == -1:
     #     sleep(0.5)
@@ -44,7 +45,8 @@ def go_forward(message):
     GPIO.output(in4, GPIO.LOW)
 
 def go_backward(message):
-    stop_internal()
+    print("Going backward")
+    # stop_internal()
     # global direction
     # if direction == 1:
     #     sleep(0.5)
@@ -60,7 +62,7 @@ def stop(message):
     stop_internal()
 
 def turn_right_internal():
-    stop_internal()
+    # stop_internal()
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
@@ -68,12 +70,12 @@ def turn_right_internal():
     #sleep(0.5)
 
 def turn_left_internal():
-    stop_internal()
+    # stop_internal()
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
-    sleep(0.5)
+    # sleep(0.5)
 
 
 def stop_internal():
@@ -111,11 +113,13 @@ def initialize_gpio():
     pwm1.start(0)
     pwm2.start(0)
     direction = 0
+    set_speed(50)
 
 def start():
+    print("Starting the car")
     initialize_gpio()
 
-def stop():
+def exit():
     stop_internal()
     GPIO.cleanup()
 
