@@ -23,7 +23,7 @@ def handle_ultrasonic(distance):
         handle_control_message({"command": "stop"})
         handle_control_message({"command": "turn_right", "degree": 90})
         sleep(0.5)
-        handle_control_message({"command": "go_forward"})
+        handle_control_message({"command": "continue_running"})
 
 def handle_gyro(gyro_x, gyro_y, gyro_z):
     print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
