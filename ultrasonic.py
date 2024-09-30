@@ -52,6 +52,7 @@ def start():
     start_daemon_thread(monitor_ultrasonic)
 
 def exit():
+    print("Stopping ultrasonic sensor")
     stop_event.set()
     GPIO.cleanup()
 
