@@ -39,8 +39,8 @@ def go_forward(message):
     # if direction == -1:
     #     sleep(0.5)
     direction = 1
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in2, GPIO.HIGH)
+    GPIO.output(in1, GPIO.LOW)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
 
@@ -51,8 +51,8 @@ def go_backward(message):
     # if direction == 1:
     #     sleep(0.5)
     direction = -1
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
+    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
@@ -63,16 +63,16 @@ def stop(message):
 
 def turn_right_internal():
     # stop_internal()
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in2, GPIO.HIGH)
+    GPIO.output(in1, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
     #sleep(0.5)
 
 def turn_left_internal():
     # stop_internal()
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
+    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
     # sleep(0.5)
@@ -89,14 +89,14 @@ def set_speed_internal(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
     pwm2.ChangeDutyCycle(duty_cycle)
 
-# def continue_running():
-#     stop_internal()
-#     if direction == 1:
-#         go_forward()
-#     elif direction == -1:
-#         go_backward()
-#     else:
-#         stop()
+def continue_running(message):
+    stop_internal()
+    if direction == 1:
+        go_forward(message)
+    elif direction == -1:
+        go_backward(message)
+    else:
+        stop_internal()
 
 def initialize_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -115,6 +115,7 @@ def initialize_gpio():
     direction = 0
     set_speed_internal(50)
 
+
 def start():
     print("Starting the car")
     initialize_gpio()
@@ -130,3 +131,4 @@ register_command("set_speed", set_speed)
 register_command("go_forward", go_forward)
 register_command("go_backward", go_backward)
 register_command("stop", stop)
+register_command("continue_running", continue_running)

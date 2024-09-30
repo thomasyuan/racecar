@@ -1,4 +1,8 @@
+from time import sleep
+
 command_registry = {}
+
+TURN_THRESHOLD = 40
 
 def register_command(command_name, handler):
     command_registry[command_name] = handler
@@ -13,11 +17,15 @@ def handle_control_message(message):
 
 def handle_ultrasonic(distance):
     print(f"Distance: {distance} cm")
+    if (distance < TURN_THRESHOLD):
+        print("Obstacle detected!")
+        # Stop the car
+        handle_control_message({"command": "stop"})
+        handle_control_message({"command": "turn_right", "degree": 90})
+        sleep(0.5)
+        handle_control_message({"command": "go_forward"})
 
-def handle_gyro(data):
-    gyro_x = data.get("gyro_x")
-    gyro_y = data.get("gyro_y")
-    gyro_z = data.get("gyro_z")
+def handle_gyro(gyro_x, gyro_y, gyro_z):
     print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
 
 def handle_gps(data):
