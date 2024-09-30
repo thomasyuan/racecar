@@ -20,7 +20,6 @@ def handle_gyro(data):
     gyro_z = data.get("gyro_z")
     print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
 
-
 def handle_gps(data):
     print(f"GPS Data: {data}")
 

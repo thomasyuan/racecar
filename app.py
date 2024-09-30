@@ -1,36 +1,18 @@
-import threading
-import time
 import connection
 import motor
-import RPi.GPIO as GPIO
-
-from utils import start_daemon_thread
-
-# Define threshold distance in cm
-DISTANCE_THRESHOLD = 30
-
-def monitor_ultrasonic():
-    while True:
-        distance = get_distance()
-        print(f"Distance: {distance} cm")
-        if distance < DISTANCE_THRESHOLD:
-            print("Obstacle detected! Turning right.")
-            set_servo_angle(90)  # Turn right
-        time.sleep(1)
+import ultrasonic
 
 if __name__ == "__main__":
     try:
         # Start the status update thread
-        start_daemon_thread(connection.send_status_updates)
-
+        connection.start()
         # Start the ultrasonic monitoring thread
-        start_daemon_thread(monitor_ultrasonic)
-
+        ultrasonic.start()
 
         # Main thread will handle other tasks or just keep the program running
         while True:
             pass  # Do nothing, just keep the main thread alive
     except KeyboardInterrupt:
         print("Exiting...")
-        connection.pubnub.unsubscribe_all()
-        GPIO.cleanup()  # Clean up GPIO on exit
+        connection.exit()
+        ultrasonic.exit()

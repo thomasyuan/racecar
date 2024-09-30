@@ -1,10 +1,12 @@
 import time
+import controller  # Import the command handler module
+
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory
 from utils import get_serial  # Import the get_serial function
-import controller  # Import the command handler module
+from utils import start_daemon_thread  # Import the start_daemon_thread function
 
 publish_key = 'pub-c-767218fd-fcf4-4285-83b5-69c03a17c076'
 subscribe_key = 'sub-c-e6322d6f-8cd7-4ff1-a4f1-8605f88f4487'
@@ -64,11 +66,14 @@ def send_status_updates():
 def start():
     start_daemon_thread(send_status_updates)
 
-
 def main():
-    send_status_updates
-    while True:
-        pass
+    start()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Exiting...")
+        pubnub.unsubscribe_all()
 
 if __name__ == "__main__":
     main()
