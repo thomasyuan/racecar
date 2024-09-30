@@ -40,25 +40,36 @@ pubnub.subscribe().channels([public_channel, control_channel]).execute()
 
 def publish_public_announcement():
     announcement = {"car_id": car_id, "status_channel": status_channel, "control_channel": control_channel}
-    pubnub.publish().channel(public_channel).message(announcement).pn_async(my_publish_callback)
+    pubnub.publish().channel(public_channel).message(announcement).pn_async(lambda envelope, status: my_publish_callback(envelope, status, announcement))
 
 def publish_status(status_message):
-    pubnub.publish().channel(status_channel).message({"status": status_message}).pn_async(my_publish_callback)
+    message = {"status": status_message}
+    pubnub.publish().channel(status_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
 def publish_message(message):
-    pubnub.publish().channel(control_channel).message(message).pn_async(my_publish_callback)
+    pubnub.publish().channel(control_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
-def my_publish_callback(envelope, status):
+def my_publish_callback(envelope, status, message):
     if not status.is_error():
-        print("Message published successfully")
+        print(f"Message published successfully: {message}")
     else:
-        print("Failed to publish message")
+        print(f"Failed to publish message: {message}")
 
 if __name__ == "__main__":
     try:
         while True:
             # Send a status update every 10 seconds
-            publish_status("ready")
+            publish_status("alive")
+            time.sleep(10)
+    except KeyboardInterrupt:
+        print("Exiting...")
+        pubnub.unsubscribe_all()
+
+if __name__ == "__main__":
+    try:
+        while True:
+            # Send a status update every 10 seconds
+            publish_status("alive")
             time.sleep(10)
     except KeyboardInterrupt:
         print("Exiting...")
