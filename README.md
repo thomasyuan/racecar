@@ -37,7 +37,7 @@ Need install `sudo apt install pypy3-dev`
 
 {
 "command": "set_speed",
-"speed": 90
+"speed": 50
 }
 
 {

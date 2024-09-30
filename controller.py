@@ -16,9 +16,9 @@ def handle_control_message(message):
         print(f"Unknown command: {command}")
 
 def handle_ultrasonic(distance):
-    print(f"Distance: {distance} cm")
+    # print(f"Distance: {distance} cm")
     if (distance < TURN_THRESHOLD):
-        print("Obstacle detected!")
+        print("Obstacle detected! {distance} cm")
         # Stop the car
         handle_control_message({"command": "stop"})
         handle_control_message({"command": "turn_right", "degree": 90})

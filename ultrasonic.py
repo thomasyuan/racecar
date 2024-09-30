@@ -9,8 +9,6 @@ from utils import start_daemon_thread  # Import the start_daemon_thread function
 TRIG_PIN = 5  # GPIO 5
 ECHO_PIN = 6  # GPIO 6
 
-# Define threshold distance in cm
-DISTANCE_THRESHOLD = 300  # 3 meters
 
 # Define the interval for reading the sensor in the monitoring loop
 MONITOR_READING_INTERVAL = 0.05
