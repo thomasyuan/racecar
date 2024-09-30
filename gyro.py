@@ -25,7 +25,7 @@ CALIBRATION_OFFSET_Z = 0.0
 # Gyro sensitivity (LSB/dps)
 GYRO_SENSITIVITY = 131.0  # Assuming ±250 dps
 
-MONITOR_INTERVAL = 0.05
+MONITOR_INTERVAL = 1
 
 # Initialize I2C bus
 bus = smbus.SMBus(I2C_BUS)
@@ -95,7 +95,7 @@ def monitor_gyro():
     calibrate_gyro()
     while True:
         gyro_x, gyro_y, gyro_z = read_gyro_data()
-        controller.handle_gyro({"gyro_x": gyro_x, "gyro_y": gyro_y, "gyro_z": gyro_z})
+        controller.handle_gyro(gyro_x, gyro_y, gyro_z)
         #print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
         time.sleep(MONITOR_INTERVAL)
 
