@@ -65,6 +65,7 @@ def stop(message):
 
 def turn_right_internal():
     # stop_internal()
+
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)

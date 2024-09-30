@@ -25,7 +25,7 @@ CALIBRATION_OFFSET_Z = 0.0
 # Gyro sensitivity (LSB/dps)
 GYRO_SENSITIVITY = 131.0  # Assuming ±250 dps
 
-MONITOR_INTERVAL = 1
+MONITOR_INTERVAL = 10
 
 # Initialize I2C bus
 bus = smbus.SMBus(I2C_BUS)
