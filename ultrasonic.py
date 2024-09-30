@@ -13,7 +13,7 @@ ECHO_PIN = 6  # GPIO 6
 DISTANCE_THRESHOLD = 300  # 3 meters
 
 # Define the interval for reading the sensor in the monitoring loop
-MONITOR_READING_INTERVAL = 0.01
+MONITOR_READING_INTERVAL = 0.05
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)

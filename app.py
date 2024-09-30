@@ -11,6 +11,8 @@ if __name__ == "__main__":
         ultrasonic.start()
 
         gyro.start()
+
+        motor.start()
         # Main thread will handle other tasks or just keep the program running
         while True:
             pass  # Do nothing, just keep the main thread alive
@@ -19,3 +21,4 @@ if __name__ == "__main__":
         connection.exit()
         ultrasonic.exit()
         gyro.exit()
+        motor.exit()
