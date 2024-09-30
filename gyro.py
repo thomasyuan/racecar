@@ -24,6 +24,8 @@ CALIBRATION_OFFSET_Z = 0.0
 # Gyro sensitivity (LSB/dps)
 GYRO_SENSITIVITY = 131.0  # Assuming ±250 dps
 
+MONITOR_INTERVAL = 0.05
+
 # Initialize I2C bus
 bus = smbus.SMBus(I2C_BUS)
 
@@ -80,15 +82,12 @@ def calibrate_gyro(samples=100):
     print(f"Calibration offsets: X={CALIBRATION_OFFSET_X}, Y={CALIBRATION_OFFSET_Y}, Z={CALIBRATION_OFFSET_Z}")
 
 def main():
-    initialize_gyro()
-    calibrate_gyro()
     try:
-        while True:
-            gyro_x, gyro_y, gyro_z = read_gyro_data()
-            print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
-            time.sleep(1)
+        monitor_gyro()
     except KeyboardInterrupt:
         print("Measurement stopped by User")
+    finally:
+        bus.close()
 
 def monitor_gyro():
     initialize_gyro()
@@ -96,10 +95,13 @@ def monitor_gyro():
     while True:
         gyro_x, gyro_y, gyro_z = read_gyro_data()
         print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
-        time.sleep(0.1)
+        time.sleep(MONITOR_INTERVAL)
 
-def start_monitoring():
+def start():
     start_daemon_thread(monitor_gyro)
+
+def exit():
+    bus.close()
 
 if __name__ == "__main__":
     main()

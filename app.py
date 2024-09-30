@@ -1,5 +1,6 @@
 import connection
 import motor
+import gyro
 import ultrasonic
 
 if __name__ == "__main__":
@@ -9,6 +10,7 @@ if __name__ == "__main__":
         # Start the ultrasonic monitoring thread
         ultrasonic.start()
 
+        gyro.start()
         # Main thread will handle other tasks or just keep the program running
         while True:
             pass  # Do nothing, just keep the main thread alive
@@ -16,3 +18,4 @@ if __name__ == "__main__":
         print("Exiting...")
         connection.exit()
         ultrasonic.exit()
+        gyro.exit()
