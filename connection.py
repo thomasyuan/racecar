@@ -1,3 +1,4 @@
+import json
 import time
 import threading
 import controller  # Import the command handler module
@@ -37,7 +38,12 @@ class MySubscribeCallback(SubscribeCallback):
     def message(self, pubnub, message):
         if message.channel == control_channel:
             print(f"Received control message: {message.message}")
-            controller.handle_control_message(message.message)
+            try:
+                # Attempt to parse the message as JSON
+                parsed_message = json.loads(message.message)
+                controller.handle_control_message(parsed_message)
+            except json.JSONDecodeError:
+                print("Received invalid JSON message")
 
     def presence(self, pubnub, presence):
         pass
