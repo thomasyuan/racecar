@@ -1,12 +1,13 @@
-from gpiozero import DistanceSensor
-from time import sleep
+import RPi.GPIO as GPIO
+import time
+from threading import Lock
 
 # Define GPIO pins for the ultrasonic sensor
 TRIG_PIN = 5  # GPIO 5
 ECHO_PIN = 6  # GPIO 6
 
 # Define threshold distance in cm
-DISTANCE_THRESHOLD = 0.3  # gpiozero uses meters
+DISTANCE_THRESHOLD = 300  # 3 meters
 
 # Define the interval for reading the sensor in the monitoring loop
 MONITOR_READING_INTERVAL = 0.1
@@ -14,13 +15,33 @@ MONITOR_READING_INTERVAL = 0.1
 # Define the interval for reading the sensor in the main loop
 MAIN_READING_INTERVAL = 1
 
-# Initialize the DistanceSensor
-sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN)
+# Initialize GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(TRIG_PIN, GPIO.OUT)
+GPIO.setup(ECHO_PIN, GPIO.IN)
+
+# Create a lock object
+lock = Lock()
 
 def get_distance():
-    # Get the distance in meters and convert to cm
-    distance = sensor.distance * 100
-    return round(distance, 2)
+    # Send a 10us pulse to trigger
+    GPIO.output(TRIG_PIN, True)
+    time.sleep(0.00001)
+    GPIO.output(TRIG_PIN, False)
+
+    # Wait for the echo to start
+    while GPIO.input(ECHO_PIN) == 0:
+        pulse_start = time.time()
+
+    # Wait for the echo to end
+    while GPIO.input(ECHO_PIN) == 1:
+        pulse_end = time.time()
+
+    # Calculate the distance
+    pulse_duration = pulse_end - pulse_start
+    distance = pulse_duration * 17150  # Speed of sound in cm/s
+    distance = round(distance, 2)
+    return distance
 
 def read_ultrasonic_sensor():
     return get_distance()
@@ -28,20 +49,24 @@ def read_ultrasonic_sensor():
 def main():
     try:
         while True:
-            distance = read_ultrasonic_sensor()
-            print(f"Distance: {distance} cm")
-            sleep(MAIN_READING_INTERVAL)
+            with lock:
+                distance = read_ultrasonic_sensor()
+                print(f"Distance: {distance} cm")
+            time.sleep(MAIN_READING_INTERVAL)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
+    finally:
+        GPIO.cleanup()
 
 def monitor_ultrasonic():
     while True:
-        distance = get_distance()
-        print(f"Distance: {distance} cm")
-        if distance < DISTANCE_THRESHOLD * 100:  # Convert threshold to cm
-            print("Obstacle detected! Turning right.")
-            # set_servo_angle(90)  # Turn right
-        sleep(MONITOR_READING_INTERVAL)
+        with lock:
+            distance = get_distance()
+            print(f"Distance: {distance} cm")
+            if distance < DISTANCE_THRESHOLD:  # Compare with threshold in cm
+                print("Obstacle detected! Turning right.")
+                # set_servo_angle(90)  # Turn right
+        time.sleep(MONITOR_READING_INTERVAL)
 
 def start_monitoring():
     import threading
