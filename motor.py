@@ -8,6 +8,7 @@ in3 = 17
 in4 = 27
 en1 = 4
 en2 = 25
+speed = 0
 
 def turn_right(message):
     degree = message.get("degree", 0)
@@ -22,6 +23,7 @@ def turn_left(message):
     # Implement the logic to turn the car left by the specified degree
 
 def set_speed(message):
+    global speed
     speed = message.get("speed", 0)
     print(f"Setting speed to {speed}")
     if (speed > 100):
@@ -113,7 +115,7 @@ def initialize_gpio():
     pwm1.start(0)
     pwm2.start(0)
     direction = 0
-    set_speed_internal(50)
+    set_speed_internal(speed)
 
 
 def start():
