@@ -5,8 +5,8 @@ from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory
-from utils import get_serial  # Import the get_serial function
-from utils import start_daemon_thread  # Import the start_daemon_thread function
+from utils import get_serial
+from utils import start_daemon_thread
 
 publish_key = 'pub-c-767218fd-fcf4-4285-83b5-69c03a17c076'
 subscribe_key = 'sub-c-e6322d6f-8cd7-4ff1-a4f1-8605f88f4487'
@@ -22,6 +22,9 @@ pnconfig.subscribe_key = subscribe_key
 pnconfig.uuid = car_id
 
 pubnub = PubNub(pnconfig)
+
+# Create a stop event
+stop_event = threading.Event()
 
 class MySubscribeCallback(SubscribeCallback):
     def status(self, pubnub, status):
@@ -59,12 +62,17 @@ def my_publish_callback(envelope, status, message):
         print(f"Failed to publish message: {message}")
 
 def send_status_updates():
-    while True:
+    while not stop_event.is_set():
         publish_status("alive")
-        time.sleep(10)
+        time.sleep(3)
 
 def start():
+    stop_event.clear()
     start_daemon_thread(send_status_updates)
+
+def exit():
+    stop_event.set()
+    pubnub.unsubscribe_all()
 
 def main():
     try:
