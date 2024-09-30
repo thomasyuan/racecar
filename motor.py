@@ -63,7 +63,7 @@ def stop(message):
     direction = 0
     stop_internal()
 
-def turn_right_internal():
+def turn_left_internal():
     # stop_internal()
 
     GPIO.output(in2, GPIO.HIGH)
@@ -72,7 +72,7 @@ def turn_right_internal():
     GPIO.output(in4, GPIO.HIGH)
     #sleep(0.5)
 
-def turn_left_internal():
+def turn_right_internal():
     # stop_internal()
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in1, GPIO.HIGH)
