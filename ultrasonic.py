@@ -13,10 +13,6 @@ ECHO_PIN = 6  # GPIO 6
 # Define the interval for reading the sensor in the monitoring loop
 MONITOR_READING_INTERVAL = 0.1
 
-# Initialize GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(TRIG_PIN, GPIO.OUT)
-GPIO.setup(ECHO_PIN, GPIO.IN)
 
 # Create a stop event
 stop_event = threading.Event()
@@ -48,6 +44,11 @@ def monitor_ultrasonic():
         time.sleep(MONITOR_READING_INTERVAL)
 
 def start():
+    # Initialize GPIO
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(TRIG_PIN, GPIO.OUT)
+    GPIO.setup(ECHO_PIN, GPIO.IN)
+
     stop_event.clear()
     start_daemon_thread(monitor_ultrasonic)
 
