@@ -36,10 +36,13 @@ def set_speed(message):
 
 def go_forward(message):
     print("Going forward")
+    set_speed_internal(speed)
+
     # stop_internal()
     # global direction
     # if direction == -1:
     #     sleep(0.5)
+    global direction
     direction = 1
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in1, GPIO.LOW)
@@ -48,10 +51,13 @@ def go_forward(message):
 
 def go_backward(message):
     print("Going backward")
+    set_speed_internal(speed)
+
     # stop_internal()
     # global direction
     # if direction == 1:
     #     sleep(0.5)
+    global direction
     direction = -1
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in1, GPIO.HIGH)
@@ -65,15 +71,18 @@ def stop(message):
 
 def turn_left_internal():
     stop_internal()
+    set_speed_internal(80)
 
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
+
     #sleep(0.5)
 
 def turn_right_internal():
     stop_internal()
+    set_speed_internal(80)
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
@@ -95,6 +104,8 @@ def set_speed_internal(duty_cycle):
 def continue_running(message):
     # stop_internal()
     print(f"Continuing running {direction}")
+    set_speed_internal(speed)
+
     if direction == 1:
         go_forward(message)
     elif direction == -1:
