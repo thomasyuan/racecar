@@ -14,8 +14,12 @@ def handle_control_message(message):
 def handle_ultasonic(distance):
     print(f"Distance: {distance} cm")
 
-def handle_imu(data):
-    print(f"IMU Data: {data}")
+def handle_gyro(data):
+    gyro_x = data.get("gyro_x")
+    gyro_y = data.get("gyro_y")
+    gyro_z = data.get("gyro_z")
+    print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
+
 
 def handle_gps(data):
     print(f"GPS Data: {data}")

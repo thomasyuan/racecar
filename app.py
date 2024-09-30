@@ -9,7 +9,14 @@ from utils import start_daemon_thread
 # Define threshold distance in cm
 DISTANCE_THRESHOLD = 30
 
-
+def monitor_ultrasonic():
+    while True:
+        distance = get_distance()
+        print(f"Distance: {distance} cm")
+        if distance < DISTANCE_THRESHOLD:
+            print("Obstacle detected! Turning right.")
+            set_servo_angle(90)  # Turn right
+        time.sleep(1)
 
 if __name__ == "__main__":
     try:

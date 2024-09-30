@@ -60,3 +60,15 @@ def send_status_updates():
     while True:
         publish_status("alive")
         time.sleep(10)
+
+def start():
+    start_daemon_thread(send_status_updates)
+
+
+def main():
+    send_status_updates
+    while True:
+        pass
+
+if __name__ == "__main__":
+    main()

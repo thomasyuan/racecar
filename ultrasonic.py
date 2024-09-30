@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
-from threading import Lock
+import controller
+from utils import start_daemon_thread  # Import the start_daemon_thread function
 
 # Define GPIO pins for the ultrasonic sensor
 TRIG_PIN = 5  # GPIO 5
@@ -19,9 +20,6 @@ MAIN_READING_INTERVAL = 1
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(TRIG_PIN, GPIO.OUT)
 GPIO.setup(ECHO_PIN, GPIO.IN)
-
-# Create a lock object
-lock = Lock()
 
 def get_distance():
     # Send a 10us pulse to trigger
@@ -49,9 +47,8 @@ def read_ultrasonic_sensor():
 def main():
     try:
         while True:
-            with lock:
-                distance = read_ultrasonic_sensor()
-                print(f"Distance: {distance} cm")
+            distance = read_ultrasonic_sensor()
+            print(f"Distance: {distance} cm")
             time.sleep(MAIN_READING_INTERVAL)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
@@ -60,20 +57,13 @@ def main():
 
 def monitor_ultrasonic():
     while True:
-        with lock:
-            distance = get_distance()
-            print(f"Distance: {distance} cm")
-            if distance < DISTANCE_THRESHOLD:  # Compare with threshold in cm
-                print("Obstacle detected! Turning right.")
-                # set_servo_angle(90)  # Turn right
+        distance = get_distance()
+        print(f"Distance: {distance} cm")
+        controller.handle_ultasonic(distance)
         time.sleep(MONITOR_READING_INTERVAL)
 
 def start_monitoring():
-    import threading
-    thread = threading.Thread(target=monitor_ultrasonic)
-    thread.daemon = True
-    thread.start()
-    return thread
+    start_daemon_thread(monitor_ultrasonic)
 
 if __name__ == "__main__":
     main()
