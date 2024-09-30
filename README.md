@@ -45,5 +45,8 @@ Need install `sudo apt install pypy3-dev`
 }
 
 {
+"command": "go_backward"
+}
+{
 "command": "stop"
 }

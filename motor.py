@@ -113,7 +113,7 @@ def initialize_gpio():
     pwm1.start(0)
     pwm2.start(0)
     direction = 0
-    set_speed(50)
+    set_speed_internal(50)
 
 def start():
     print("Starting the car")
