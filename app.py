@@ -1,9 +1,14 @@
+
+import time
+import json
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory
-import time
 from utils import get_serial  # Import the get_serial function
+
+import command_handler  # Import the command handler module
+import motor  # Import the motor module to register its commands
 
 publish_key = 'pub-c-767218fd-fcf4-4285-83b5-69c03a17c076'
 subscribe_key = 'sub-c-e6322d6f-8cd7-4ff1-a4f1-8605f88f4487'
@@ -30,7 +35,7 @@ class MySubscribeCallback(SubscribeCallback):
     def message(self, pubnub, message):
         if message.channel == control_channel:
             print(f"Received control message: {message.message}")
-            # Handle control message here
+            command_handler.handle_control_message(json.loads(message.message))
 
     def presence(self, pubnub, presence):
         pass
