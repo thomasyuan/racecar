@@ -1,40 +1,55 @@
-import RPi.GPIO as GPIO
-import time
+from gpiozero import DistanceSensor
+from time import sleep
+from servo import set_servo_angle
 
-TRIG = 23
-ECHO = 24
+# Define GPIO pins for the ultrasonic sensor
+TRIG_PIN = 23  # GPIO 23
+ECHO_PIN = 24  # GPIO 24
 
-def initialize_ultrasonic():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(TRIG, GPIO.OUT)
-    GPIO.setup(ECHO, GPIO.IN)
+# Define threshold distance in cm
+DISTANCE_THRESHOLD = 0.3  # gpiozero uses meters
+
+# Define the interval for reading the sensor in the monitoring loop
+MONITOR_READING_INTERVAL = 0.1
+
+# Define the interval for reading the sensor in the main loop
+MAIN_READING_INTERVAL = 1
+
+# Initialize the DistanceSensor
+sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN)
+
+def get_distance():
+    # Get the distance in meters and convert to cm
+    distance = sensor.distance * 100
+    return round(distance, 2)
 
 def read_ultrasonic_sensor():
-    GPIO.output(TRIG, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIG, False)
-
-    while GPIO.input(ECHO) == 0:
-        pulse_start = time.time()
-    while GPIO.input(ECHO) == 1:
-        pulse_end = time.time()
-
-    pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150
-    distance = round(distance, 2)
-    return distance
+    return get_distance()
 
 def main():
     try:
-        initialize_ultrasonic()
         while True:
             distance = read_ultrasonic_sensor()
             print(f"Distance: {distance} cm")
-            time.sleep(0.1)
+            sleep(MAIN_READING_INTERVAL)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
-    finally:
-        GPIO.cleanup()
+
+def monitor_ultrasonic():
+    while True:
+        distance = get_distance()
+        print(f"Distance: {distance} cm")
+        if distance < DISTANCE_THRESHOLD * 100:  # Convert threshold to cm
+            print("Obstacle detected! Turning right.")
+            # set_servo_angle(90)  # Turn right
+        sleep(MONITOR_READING_INTERVAL)
+
+def start_monitoring():
+    import threading
+    thread = threading.Thread(target=monitor_ultrasonic)
+    thread.daemon = True
+    thread.start()
+    return thread
 
 if __name__ == "__main__":
     main()

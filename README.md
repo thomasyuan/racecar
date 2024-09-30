@@ -29,3 +29,9 @@ Need install `sudo apt install pypy3-dev`
 ## Shell do everything.
 
 `setup.sh`
+
+
+{
+    "command": "turn_right",
+    "degree": 90
+}

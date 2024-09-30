@@ -1,4 +1,4 @@
-from command_handler import register_command
+from controller import register_command
 
 def turn_right(message):
     degree = message.get("degree", 0)
