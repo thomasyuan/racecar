@@ -11,7 +11,7 @@ def handle_control_message(message):
     else:
         print(f"Unknown command: {command}")
 
-def handle_ultasonic(distance):
+def handle_ultrasonic(distance):
     print(f"Distance: {distance} cm")
 
 def handle_gyro(data):
