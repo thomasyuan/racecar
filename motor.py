@@ -10,17 +10,23 @@ en1 = 4
 en2 = 25
 speed = 0
 
-def turn_right(message):
-    degree = message.get("degree", 0)
-    print(f"Turning right by {degree} degrees")
-    turn_right_internal()
-    # Implement the logic to turn the car right by the specified degree
 
-def turn_left(message):
-    degree = message.get("degree", 0)
-    print(f"Turning left by {degree} degrees")
-    turn_left_internal()
-    # Implement the logic to turn the car left by the specified degree
+def set_gear(message):
+    gear = message.get("gear", 0)
+    print(f"Setting gear to {gear}")
+    global direction
+    if gear == 'D':
+        direction = 1
+        control_left_wheels(1)
+        control_right_wheels(1)
+    elif gear == 'R':
+        direction = -1
+        control_left_wheels(-1)
+        control_right_wheels(-1)
+    else:
+        direction = 0
+        control_left_wheels(0)
+        control_right_wheels(0)
 
 def set_speed(message):
     global speed
@@ -32,70 +38,52 @@ def set_speed(message):
         speed = 0
 
     set_speed_internal(speed)
-    # Implement the logic to set the car's speed
 
-def go_forward(message):
-    print("Going forward")
-    set_speed_internal(speed)
+def turn(message):
+    direction = message.get("direction")
+    if direction == "left":
+        turn_left_internal()
+    elif direction == "right":
+        turn_right_internal()
+    elif direction == "center":
+        stop_internal()
 
-    # stop_internal()
-    # global direction
-    # if direction == -1:
-    #     sleep(0.5)
-    global direction
-    direction = 1
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
+def control_left_wheels(direction):
+    if direction == 1:
+        GPIO.output(in2, GPIO.HIGH)
+        GPIO.output(in1, GPIO.LOW)
+    elif direction == -1:
+        GPIO.output(in2, GPIO.LOW)
+        GPIO.output(in1, GPIO.HIGH)
+    else:
+        GPIO.output(in2, GPIO.LOW)
+        GPIO.output(in1, GPIO.LOW)
 
-def go_backward(message):
-    print("Going backward")
-    set_speed_internal(speed)
-
-    # stop_internal()
-    # global direction
-    # if direction == 1:
-    #     sleep(0.5)
-    global direction
-    direction = -1
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
-
-def stop(message):
-    global direction
-    direction = 0
-    stop_internal()
+def control_right_wheels(direction):
+    if direction == 1:
+        GPIO.output(in3, GPIO.HIGH)
+        GPIO.output(in4, GPIO.LOW)
+    elif direction == -1:
+        GPIO.output(in3, GPIO.LOW)
+        GPIO.output(in4, GPIO.HIGH)
+    else:
+        GPIO.output(in3, GPIO.LOW)
+        GPIO.output(in4, GPIO.LOW)
 
 def turn_left_internal():
-    stop_internal()
-    set_speed_internal(80)
-
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
-
-    #sleep(0.5)
+    print("Turning left")
+    control_left_wheels(1)
+    control_right_wheels(-1)
 
 def turn_right_internal():
-    stop_internal()
-    set_speed_internal(80)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
-    # sleep(0.5)
-
+    print("Turning right")
+    control_left_wheels(-1)
+    control_right_wheels(1)
 
 def stop_internal():
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.LOW)
-
+    print("center")
+    control_left_wheels(direction)
+    control_right_wheels(direction)
 
 def set_speed_internal(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
@@ -128,8 +116,9 @@ def initialize_gpio():
     pwm1.start(0)
     pwm2.start(0)
     direction = 0
+    control_left_wheels(0)
+    control_right_wheels(0)
     set_speed_internal(speed)
-
 
 def start():
     print("Starting the car")
@@ -140,10 +129,6 @@ def exit():
     GPIO.cleanup()
 
 # Register commands
-register_command("turn_right", turn_right)
-register_command("turn_left", turn_left)
+register_command("turn", turn)
+register_command("set_gear", set_gear)
 register_command("set_speed", set_speed)
-register_command("go_forward", go_forward)
-register_command("go_backward", go_backward)
-register_command("stop", stop)
-register_command("continue_running", continue_running)

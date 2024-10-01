@@ -47,6 +47,18 @@ class MySubscribeCallback(SubscribeCallback):
                     controller.handle_control_message(parsed_message)
                 except json.JSONDecodeError:
                     print("Received invalid JSON message")
+        elif message.channel == public_channel:
+            print(f"Received public message: {message.message}")
+            if isinstance(message.message, dict) and message.message.get("query") == "login":
+                publish_public_announcement()
+            else:
+                try:
+                    # Attempt to parse the message as JSON
+                    parsed_message = json.loads(message.message)
+                    if parsed_message.get("query") == "login":
+                        publish_public_announcement()
+                except json.JSONDecodeError:
+                    print("Received invalid JSON message")
 
     def presence(self, pubnub, presence):
         pass

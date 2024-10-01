@@ -13,7 +13,6 @@ ECHO_PIN = 6  # GPIO 6
 # Define the interval for reading the sensor in the monitoring loop
 MONITOR_READING_INTERVAL = 0.1
 
-
 # Create a stop event
 stop_event = threading.Event()
 
@@ -24,20 +23,12 @@ def get_distance():
     GPIO.output(TRIG_PIN, False)
 
     # Wait for the echo to start
-    pulse_start = time.time()
-    timeout_start = time.time()
     while GPIO.input(ECHO_PIN) == 0:
         pulse_start = time.time()
-        if pulse_start - timeout_start > 0.01:  # 10ms timeout
-            return None  # Timeout occurred
 
     # Wait for the echo to end
-    pulse_end = time.time()
-    timeout_start = time.time()
     while GPIO.input(ECHO_PIN) == 1:
         pulse_end = time.time()
-        if pulse_end - timeout_start > 0.01:  # 10ms timeout
-            return None  # Timeout occurred
 
     # Calculate the distance
     pulse_duration = pulse_end - pulse_start
