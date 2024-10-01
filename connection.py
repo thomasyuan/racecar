@@ -49,8 +49,9 @@ class MySubscribeCallback(SubscribeCallback):
                     print("Received invalid JSON message")
         elif message.channel == public_channel:
             print(f"Received public message: {message.message}")
-            if isinstance(message.message, dict) and message.message.get("query") == "login":
-                publish_public_announcement()
+            if isinstance(message.message, dict):
+                if message.message.get("query") == "login":
+                    publish_public_announcement()
             else:
                 try:
                     # Attempt to parse the message as JSON
