@@ -26,22 +26,22 @@ def get_distance():
         print(f"Error getting distance: {e}")
         return None
 
-def get_average_distance(samples=5):
-    distances = []
-    for _ in range(samples):
-        distance = get_distance()
-        if distance is not None:
-            distances.append(distance)
-        time.sleep(0.05)  # Small delay between samples
+# def get_average_distance(samples=5):
+#     distances = []
+#     for _ in range(samples):
+#         distance = get_distance()
+#         if distance is not None:
+#             distances.append(distance)
+#         time.sleep(0.05)  # Small delay between samples
 
-    if distances:
-        return sum(distances) / len(distances)
-    else:
-        return None
+#     if distances:
+#         return sum(distances) / len(distances)
+#     else:
+#         return None
 
 def monitor_ultrasonic():
     while not stop_event.is_set():
-        distance = get_average_distance()
+        distance = get_distance()
         if distance is not None:
             print(f"Distance: {distance} cm")
             controller.handle_ultrasonic(distance)
@@ -53,7 +53,7 @@ def monitor_ultrasonic():
 if __name__ == "__main__":
     try:
         while True:
-            distance = get_average_distance()
+            distance = get_distance()
             if distance is not None:
                 print(f"Distance: {distance} cm")
             else:
