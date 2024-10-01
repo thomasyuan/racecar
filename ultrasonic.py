@@ -45,9 +45,9 @@ def get_average_distance(samples=5):
 
 def monitor_ultrasonic():
     while not stop_event.is_set():
-        distance = get_average_distance()
+        distance = get_distance()
         if distance is not None:
-            print(f"Distance: {distance} cm")
+            # print(f"Distance: {distance} cm")
             controller.handle_ultrasonic(distance)
         else:
             print("Failed to get distance")
