@@ -74,6 +74,7 @@ def turn_left_internal():
     if direction == 0:
         return
     print("Turning left")
+    stop_internal()
     control_left_wheels(1)
     control_right_wheels(-1)
 
@@ -81,6 +82,7 @@ def turn_right_internal():
     if direction == 0:
         return
     print("Turning right")
+    stop_internal()
     control_left_wheels(-1)
     control_right_wheels(1)
 
