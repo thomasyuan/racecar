@@ -6,6 +6,9 @@ import controller  # Import the controller module
 
 from utils import start_daemon_thread  # Import the start_daemon_thread function
 
+# Set the pin factory to use RPi.GPIO
+factory = RPiGPIOFactory()
+
 # Define GPIO pins for the ultrasonic sensor
 TRIG_PIN = 5  # GPIO 5
 ECHO_PIN = 6  # GPIO 6
@@ -16,8 +19,8 @@ MONITOR_READING_INTERVAL = 0.1
 # Create a stop event
 stop_event = threading.Event()
 
-# Initialize the DistanceSensor
-sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN)
+# Initialize the DistanceSensor with the specified pin factory
+sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN, pin_factory=factory)
 
 def get_distance():
     try:
@@ -27,22 +30,22 @@ def get_distance():
         print(f"Error getting distance: {e}")
         return None
 
-# def get_average_distance(samples=5):
-#     distances = []
-#     for _ in range(samples):
-#         distance = get_distance()
-#         if distance is not None:
-#             distances.append(distance)
-#         time.sleep(0.05)  # Small delay between samples
+def get_average_distance(samples=5):
+    distances = []
+    for _ in range(samples):
+        distance = get_distance()
+        if distance is not None:
+            distances.append(distance)
+        time.sleep(0.05)  # Small delay between samples
 
-#     if distances:
-#         return sum(distances) / len(distances)
-#     else:
-#         return None
+    if distances:
+        return sum(distances) / len(distances)
+    else:
+        return None
 
 def monitor_ultrasonic():
     while not stop_event.is_set():
-        distance = get_distance()
+        distance = get_average_distance()
         if distance is not None:
             print(f"Distance: {distance} cm")
             controller.handle_ultrasonic(distance)
