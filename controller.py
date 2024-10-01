@@ -21,9 +21,9 @@ def handle_ultrasonic(distance):
         print(f"Obstacle detected! {distance} cm")
         # Stop the car
         # handle_control_message({"command": "stop"})
-        handle_control_message({"command": "turn_right", "degree": 90})
-        sleep(1)
-        handle_control_message({"command": "continue_running"})
+        handle_control_message({"command": "turn", "direction":"right"})
+        sleep(0.8)
+        handle_control_message({"command": "turn", "direction":"center"})
 
 def handle_gyro(gyro_x, gyro_y, gyro_z):
     print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
