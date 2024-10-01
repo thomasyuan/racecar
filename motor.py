@@ -46,7 +46,7 @@ def turn(message):
     elif direction == "right":
         turn_right_internal()
     elif direction == "center":
-        stop_internal()
+        back_to_center_internal()
 
 def control_left_wheels(direction):
     if direction == 1:
@@ -86,6 +86,10 @@ def turn_right_internal():
     control_left_wheels(-1)
     control_right_wheels(1)
 
+def back_to_center_internal():
+    control_left_wheels(direction)
+    control_right_wheels(direction)
+    
 def stop_internal():
     print("center")
     control_left_wheels(direction)
@@ -94,18 +98,6 @@ def stop_internal():
 def set_speed_internal(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
     pwm2.ChangeDutyCycle(duty_cycle)
-
-def continue_running(message):
-    # stop_internal()
-    print(f"Continuing running {direction}")
-    set_speed_internal(speed)
-
-    if direction == 1:
-        go_forward(message)
-    elif direction == -1:
-        go_backward(message)
-    else:
-        stop_internal()
 
 def initialize_gpio():
     GPIO.setmode(GPIO.BCM)

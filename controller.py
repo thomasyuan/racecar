@@ -22,7 +22,7 @@ def handle_ultrasonic(distance):
         # Stop the car
         # handle_control_message({"command": "stop"})
         handle_control_message({"command": "turn", "direction":"right"})
-        sleep(0.8)
+    else:
         handle_control_message({"command": "turn", "direction":"center"})
 
 def handle_gyro(gyro_x, gyro_y, gyro_z):
