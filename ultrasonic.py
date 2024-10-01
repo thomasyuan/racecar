@@ -1,13 +1,13 @@
 import time
 import threading
 from gpiozero import DistanceSensor
-from gpiozero.pins.rpigpio import RPiGPIOFactory
+from gpiozero.pins.pigpio import PiGPIOFactory
 import controller  # Import the controller module
 
 from utils import start_daemon_thread  # Import the start_daemon_thread function
 
 # Set the pin factory to use RPi.GPIO
-factory = RPiGPIOFactory()
+factory = PiGPIOFactory()
 
 # Define GPIO pins for the ultrasonic sensor
 TRIG_PIN = 5  # GPIO 5
