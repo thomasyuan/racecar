@@ -1,6 +1,7 @@
 import time
 import threading
 from gpiozero import DistanceSensor
+from gpiozero.pins.rpigpio import RPiGPIOFactory
 import controller  # Import the controller module
 
 from utils import start_daemon_thread  # Import the start_daemon_thread function
