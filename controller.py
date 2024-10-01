@@ -17,7 +17,7 @@ def handle_control_message(message):
         print(f"Unknown command: {command}")
 
 def handle_ultrasonic(distance):
-    print(f"Distance: {distance} cm")
+    # print(f"Distance: {distance} cm")
     global avoiding_obstacle
     if (distance < TURN_THRESHOLD):
         if avoiding_obstacle == True:
