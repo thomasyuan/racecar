@@ -1,6 +1,6 @@
-import RPi.GPIO as GPIO
 import time
 import threading
+from gpiozero import DistanceSensor
 import controller  # Import the controller module
 
 from utils import start_daemon_thread  # Import the start_daemon_thread function
@@ -9,64 +9,67 @@ from utils import start_daemon_thread  # Import the start_daemon_thread function
 TRIG_PIN = 5  # GPIO 5
 ECHO_PIN = 6  # GPIO 6
 
-
 # Define the interval for reading the sensor in the monitoring loop
 MONITOR_READING_INTERVAL = 0.1
 
 # Create a stop event
 stop_event = threading.Event()
 
+# Initialize the DistanceSensor
+sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN)
+
 def get_distance():
-    # Send a 10us pulse to trigger
-    GPIO.output(TRIG_PIN, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIG_PIN, False)
+    try:
+        distance = sensor.distance * 100  # Convert to cm
+        return round(distance, 2)
+    except Exception as e:
+        print(f"Error getting distance: {e}")
+        return None
 
-    # Wait for the echo to start
-    while GPIO.input(ECHO_PIN) == 0:
-        pulse_start = time.time()
+def get_average_distance(samples=5):
+    distances = []
+    for _ in range(samples):
+        distance = get_distance()
+        if distance is not None:
+            distances.append(distance)
+        time.sleep(0.05)  # Small delay between samples
 
-    # Wait for the echo to end
-    while GPIO.input(ECHO_PIN) == 1:
-        pulse_end = time.time()
-
-    # Calculate the distance
-    pulse_duration = pulse_end - pulse_start
-    distance = pulse_duration * 17150  # Speed of sound in cm/s
-    distance = round(distance, 2)
-    return distance
+    if distances:
+        return sum(distances) / len(distances)
+    else:
+        return None
 
 def monitor_ultrasonic():
     while not stop_event.is_set():
-        distance = get_distance()
-        controller.handle_ultrasonic(distance)
+        distance = get_average_distance()
+        if distance is not None:
+            print(f"Distance: {distance} cm")
+            controller.handle_ultrasonic(distance)
+        else:
+            print("Failed to get distance")
         time.sleep(MONITOR_READING_INTERVAL)
+
+# Example usage
+if __name__ == "__main__":
+    try:
+        while True:
+            distance = get_average_distance()
+            if distance is not None:
+                print(f"Distance: {distance} cm")
+            else:
+                print("Failed to get distance")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Measurement stopped by User")
+    finally:
+        sensor.close()
 
 def start():
     # Initialize GPIO
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(TRIG_PIN, GPIO.OUT)
-    GPIO.setup(ECHO_PIN, GPIO.IN)
-
     stop_event.clear()
     start_daemon_thread(monitor_ultrasonic)
 
 def exit():
     print("Stopping ultrasonic sensor")
     stop_event.set()
-    GPIO.cleanup()
-
-def main():
-    try:
-        while True:
-            distance = get_distance()
-            print(f"Distance: {distance} cm")
-            time.sleep(MONITOR_READING_INTERVAL)
-    except KeyboardInterrupt:
-        print("Measurement stopped by User")
-    finally:
-        GPIO.cleanup()
-
-if __name__ == "__main__":
-    MONITOR_READING_INTERVAL = 1
-    main()
+    sensor.close()
