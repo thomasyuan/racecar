@@ -36,7 +36,7 @@ def turn(message):
     if direction == "left":
         turn_left_internal()
     elif direction == "right":
-        turn_right_internal()
+        asyncio.run(turn_right_internal())
     elif direction == "center":
         back_to_center_internal()
 
