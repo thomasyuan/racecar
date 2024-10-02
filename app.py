@@ -2,6 +2,8 @@ import connection
 import motor
 import gyro
 import ultrasonic
+import controller
+import time
 
 if __name__ == "__main__":
     try:
@@ -11,10 +13,16 @@ if __name__ == "__main__":
         motor.start()
 
 
-        ultrasonic.monitor(0.03)
         # Main thread will handle other tasks or just keep the program running
-        # while True:
-        #     pass  # Do nothing, just keep the main thread alive
+        while True:
+            distance = ultrasonic.get_distance()
+            if distance is not None:
+                print(f"Distance: {distance} cm")
+                controller.handle_ultrasonic(distance)
+            else:
+                print("Failed to get distance")
+            time.sleep(interval)
+            pass  # Do nothing, just keep the main thread alive
     except KeyboardInterrupt:
         print("Exiting...")
         connection.exit()
