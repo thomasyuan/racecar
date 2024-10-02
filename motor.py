@@ -10,24 +10,13 @@ in4 = 27
 en1 = 4
 en2 = 25
 speed = 0
-
+gear = 'P'
 
 def set_gear(message):
+    global gear
     gear = message.get("gear", 0)
     publish_status(f"Setting gear to {gear}")
-    global direction
-    if gear == 'D':
-        direction = 1
-        control_left_wheels(1)
-        control_right_wheels(1)
-    elif gear == 'R':
-        direction = -1
-        control_left_wheels(-1)
-        control_right_wheels(-1)
-    else:
-        direction = 0
-        control_left_wheels(0)
-        control_right_wheels(0)
+    set_gear_internal(gear)
 
 def set_speed(message):
     global speed
@@ -48,6 +37,49 @@ def turn(message):
         turn_right_internal()
     elif direction == "center":
         back_to_center_internal()
+
+def set_gear_internal(gear):
+    if gear == 'D':
+        control_left_wheels(1)
+        control_right_wheels(1)
+    elif gear == 'R':
+        control_left_wheels(-1)
+        control_right_wheels(-1)
+    else:
+        control_left_wheels(0)
+        control_right_wheels(0)
+
+def turn_left_internal():
+    # if direction == 0:
+    #     return
+    publish_status("Turning left")
+    stop_internal()
+    control_left_wheels(1)
+    control_right_wheels(-1)
+
+def turn_right_internal():
+    # if direction == 0:
+    #     return
+    publish_status("Turning right")
+    stop_internal()
+    control_left_wheels(-1)
+    control_right_wheels(1)
+
+def back_to_center_internal():
+    # if direction == 0:
+    #     return
+    publish_status("Back to center")
+    stop_internal()
+    set_gear_internal(gear)
+
+def stop_internal():
+    publish_status("Center")
+    control_left_wheels(0)
+    control_right_wheels(0)
+
+def set_speed_internal(duty_cycle):
+    pwm1.ChangeDutyCycle(duty_cycle)
+    pwm2.ChangeDutyCycle(duty_cycle)
 
 def control_left_wheels(direction):
     if direction == 1:
@@ -70,38 +102,6 @@ def control_right_wheels(direction):
     else:
         GPIO.output(in3, GPIO.LOW)
         GPIO.output(in4, GPIO.LOW)
-
-def turn_left_internal():
-    if direction == 0:
-        return
-    publish_status("Turning left")
-    # stop_internal()
-    control_left_wheels(1)
-    control_right_wheels(-1)
-
-def turn_right_internal():
-    if direction == 0:
-        return
-    publish_status("Turning right")
-    # stop_internal()
-    control_left_wheels(-1)
-    control_right_wheels(1)
-
-def back_to_center_internal():
-    if direction == 0:
-        return
-    publish_status("Back to center")
-    control_left_wheels(direction)
-    control_right_wheels(direction)
-
-def stop_internal():
-    publish_status("Center")
-    control_left_wheels(0)
-    control_right_wheels(0)
-
-def set_speed_internal(duty_cycle):
-    pwm1.ChangeDutyCycle(duty_cycle)
-    pwm2.ChangeDutyCycle(duty_cycle)
 
 def initialize_gpio():
     GPIO.setmode(GPIO.BCM)
