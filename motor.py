@@ -90,7 +90,7 @@ async def turn_right_internal():
         current_angle += angular_velocity_z * dt
 
         # Print the gyro data and current angle
-        print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}, Angle: {current_angle:.2f}")
+        # print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}, Angle: {current_angle:.2f}")
 
         await asyncio.sleep(0.01)  # Small delay to simulate sensor reading interval
 
