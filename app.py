@@ -1,6 +1,5 @@
 import connection
 import motor
-import gyro
 import ultrasonic
 import controller
 import time

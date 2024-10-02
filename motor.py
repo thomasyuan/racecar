@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import asyncio
 import time
+import gyro
 from controller import register_command
 from connection import publish_status
 
@@ -64,7 +65,7 @@ def turn_left_internal():
     control_left_wheels(1)
     control_right_wheels(-1)
 
-def turn_right_internal():
+async def turn_right_internal():
     # publish_status("Turning right")
     # stop_internal()
     # control_left_wheels(-1)
@@ -102,10 +103,7 @@ def turn_right_internal():
 async def read_gyro_data():
     # Replace this with actual code to read gyro data
     # For example, you might use an I2C library to read from an MPU6050 sensor
-    gyro_x = 0.0
-    gyro_y = 0.0
-    gyro_z = 1.0  # Simulated constant angular velocity
-    return gyro_x, gyro_y, gyro_z
+    return gyro.read_gyro_data()
 
 def back_to_center_internal():
     # if direction == 0:
@@ -163,6 +161,8 @@ def initialize_gpio():
     control_left_wheels(0)
     control_right_wheels(0)
     set_speed_internal(speed)
+
+    gyro.initialize_gyro()
 
 def start():
     print("Starting the car")
