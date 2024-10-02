@@ -40,7 +40,7 @@ class MySubscribeCallback(SubscribeCallback):
         from controller import handle_control_message  # Local import to avoid circular dependency
 
         if message.channel == control_channel:
-            publish_status(f"Received control message: {message.message}")
+            # publish_status(f"Received control message: {message.message}")
             if isinstance(message.message, dict):
                 handle_control_message(message.message)
             else:
