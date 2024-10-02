@@ -27,6 +27,8 @@ def handle_ultrasonic(distance):
         publish_status(f"Obstacle detected! {distance} cm")
         # motor.set_speed_internal(0)
         publish_status("turning right")
+        motor.stop_internal()
+        motor.set_speed_internal(50)
         motor.turn_right_internal()
         # handle_control_message({"command": "set_speed", "speed": 0})
 
@@ -37,6 +39,7 @@ def handle_ultrasonic(distance):
             return
         # handle_control_message({"command": "turn", "direction":"center"})
         publish_status("Obstacle cleared!")
+        motor.set_speed_internal(motor.speed)
         motor.back_to_center_internal()
         avoiding_obstacle = False
 
