@@ -1,5 +1,6 @@
 import json
 import time
+import os
 import threading
 
 from pubnub.pnconfiguration import PNConfiguration
@@ -79,7 +80,11 @@ def publish_public_announcement():
 
 def publish_status(message):
     timestamp = datetime.now().strftime("%H:%M:%S:%f")[:-3]  # Format as hh:mm:ss:ms
-    status_message = {"status": f"{timestamp} {message}"}
+    pid = os.getpid()
+    tid = threading.get_ident()
+    formatted_pid = f"{pid:05d}"  # Fixed length of 5 digits
+    formatted_tid = f"{tid:05d}"  # Fixed length of 5 digits
+    status_message = {"status": f"{timestamp} PID:{formatted_pid} TID:{formatted_tid} {message}"}
     pubnub.publish().channel(status_channel).message(status_message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
 def my_publish_callback(envelope, status, message):
