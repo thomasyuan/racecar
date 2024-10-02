@@ -14,13 +14,13 @@ gear = 'P'
 def set_gear(message):
     global gear
     gear = message.get("gear", 0)
-    publish_status(f"Setting gear to {gear}")
+    publish_status(f"Receive command to set gear to {gear}")
     set_gear_internal(gear)
 
 def set_speed(message):
     global speed
     speed = message.get("speed", 0)
-    publish_status(f"Setting speed to {speed}")
+    publish_status(f"Receive command to set speed to {speed}")
     if (speed > 100):
         speed = 100
     elif (speed < 0):
@@ -30,6 +30,7 @@ def set_speed(message):
 
 def turn(message):
     direction = message.get("direction")
+    publish_status(f"Receive command to turn {direction}")
     if direction == "left":
         turn_left_internal()
     elif direction == "right":
