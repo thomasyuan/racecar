@@ -105,14 +105,11 @@ async def read_gyro_data():
     return gyro.read_gyro_data()
 
 def back_to_center_internal():
-    # if direction == 0:
-    #     return
     publish_status("Back to center")
     stop_internal()
     set_gear_internal(gear)
 
 def stop_internal():
-    publish_status("Center")
     control_left_wheels(0)
     control_right_wheels(0)
 
