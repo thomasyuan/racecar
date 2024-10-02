@@ -20,6 +20,8 @@ def handle_control_message(message):
 def handle_ultrasonic(distance):
     # print(f"Distance: {distance} cm")
     global avoiding_obstacle
+    if motor.gear == 'P':
+        return
     if (distance < TURN_THRESHOLD):
         if avoiding_obstacle == True:
             return
