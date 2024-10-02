@@ -26,5 +26,4 @@ if __name__ == "__main__":
         print("Exiting...")
         connection.exit()
         ultrasonic.exit()
-        gyro.exit()
         motor.exit()

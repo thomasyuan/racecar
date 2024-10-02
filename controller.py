@@ -42,8 +42,6 @@ def handle_ultrasonic(distance):
         motor.back_to_center_internal()
         avoiding_obstacle = False
 
-def handle_gyro(gyro_x, gyro_y, gyro_z):
-    print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
 
 # Register commands
 register_command("turn", motor.turn)
