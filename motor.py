@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO
 import asyncio
 import time
 import gyro
-from controller import register_command
 from connection import publish_status
 
 # Define motor control pins
@@ -172,7 +171,4 @@ def exit():
     stop_internal()
     GPIO.cleanup()
 
-# Register commands
-register_command("turn", turn)
-register_command("set_gear", set_gear)
-register_command("set_speed", set_speed)
+

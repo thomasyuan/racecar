@@ -48,3 +48,7 @@ def handle_ultrasonic(distance):
 def handle_gyro(gyro_x, gyro_y, gyro_z):
     print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
 
+# Register commands
+register_command("turn", motor.turn)
+register_command("set_gear", motor.set_gear)
+register_command("set_speed", motor.set_speed)
