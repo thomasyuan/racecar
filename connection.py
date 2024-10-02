@@ -1,7 +1,6 @@
 import json
 import time
 import threading
-import controller  # Import the command handler module
 
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
@@ -37,15 +36,17 @@ class MySubscribeCallback(SubscribeCallback):
             publish_public_announcement()
 
     def message(self, pubnub, message):
+        from controller import handle_control_message  # Local import to avoid circular dependency
+
         if message.channel == control_channel:
             publish_status(f"Received control message: {message.message}")
             if isinstance(message.message, dict):
-                controller.handle_control_message(message.message)
+                handle_control_message(message.message)
             else:
                 try:
                     # Attempt to parse the message as JSON
                     parsed_message = json.loads(message.message)
-                    controller.handle_control_message(parsed_message)
+                    handle_control_message(parsed_message)
                 except json.JSONDecodeError:
                     print("Received invalid JSON message")
         elif message.channel == public_channel:
