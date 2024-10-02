@@ -1,4 +1,3 @@
-import controller
 import smbus
 import time
 from utils import start_daemon_thread  # Import the start_daemon_thread function
@@ -93,11 +92,6 @@ def main():
 def monitor_gyro():
     initialize_gyro()
     calibrate_gyro()
-    while True:
-        gyro_x, gyro_y, gyro_z = read_gyro_data()
-        controller.handle_gyro(gyro_x, gyro_y, gyro_z)
-        #print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}")
-        time.sleep(MONITOR_INTERVAL)
 
 def start():
     start_daemon_thread(monitor_gyro)
