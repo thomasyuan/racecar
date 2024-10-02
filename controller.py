@@ -1,6 +1,6 @@
 from connection import publish_status
 import motor
-
+import asyncio
 command_registry = {}
 
 TURN_THRESHOLD = 50
@@ -31,7 +31,7 @@ def handle_ultrasonic(distance):
         publish_status("turning right")
         motor.stop_internal()
         motor.set_speed_internal(50)
-        motor.turn_right_internal()
+        asyncio.run(motor.turn_right_internal())
         # handle_control_message({"command": "set_speed", "speed": 0})
 
         # handle_control_message({"command": "turn", "direction":"right"})
@@ -41,8 +41,8 @@ def handle_ultrasonic(distance):
             return
         # handle_control_message({"command": "turn", "direction":"center"})
         publish_status("Obstacle cleared!")
-        motor.set_speed_internal(motor.speed)
-        motor.back_to_center_internal()
+        # motor.set_speed_internal(motor.speed)
+        # motor.back_to_center_internal()
         avoiding_obstacle = False
 
 def handle_gyro(gyro_x, gyro_y, gyro_z):
