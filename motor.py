@@ -48,13 +48,6 @@ def set_gear_internal(gear):
         control_left_wheels(0)
         control_right_wheels(0)
 
-# Initialize variables
-current_angle = 0.0
-previous_time = time.time()
-target_angle = 90.0  # Target angle in degrees
-gyro_sensitivity = 1.0  # Sensitivity factor for the gyro (depends on your sensor)
-
-
 def turn_left_internal():
     publish_status("Turning left")
     stop_internal()
