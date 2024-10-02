@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-from controller import register_command
 from connection import publish_status
 
 # Define motor control pins
@@ -129,8 +128,3 @@ def start():
 def exit():
     stop_internal()
     GPIO.cleanup()
-
-# Register commands
-register_command("turn", turn)
-register_command("set_gear", set_gear)
-register_command("set_speed", set_speed)
