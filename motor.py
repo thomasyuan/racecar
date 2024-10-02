@@ -75,7 +75,7 @@ def turn_left_internal():
     if direction == 0:
         return
     publish_status("Turning left")
-    stop_internal()
+    # stop_internal()
     control_left_wheels(1)
     control_right_wheels(-1)
 
@@ -83,11 +83,14 @@ def turn_right_internal():
     if direction == 0:
         return
     publish_status("Turning right")
-    stop_internal()
+    # stop_internal()
     control_left_wheels(-1)
     control_right_wheels(1)
 
 def back_to_center_internal():
+    if direction == 0:
+        return
+    publish_status("Back to center")
     control_left_wheels(direction)
     control_right_wheels(direction)
 
