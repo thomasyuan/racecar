@@ -25,7 +25,7 @@ def handle_ultrasonic(distance):
         if avoiding_obstacle == True:
             return
 
-        publish_status(f"Obstacle detected! {distance} cm")
+        publish_status(f"Obstacle detected! {int(distance)} cm")
         # motor.set_speed_internal(0)
         motor.stop_internal()
         # motor.set_speed_internal(50)
