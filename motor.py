@@ -1,4 +1,6 @@
 import RPi.GPIO as GPIO
+import asyncio
+import time
 from controller import register_command
 from connection import publish_status
 
@@ -49,21 +51,61 @@ def set_gear_internal(gear):
         control_left_wheels(0)
         control_right_wheels(0)
 
+# Initialize variables
+current_angle = 0.0
+previous_time = time.time()
+target_angle = 90.0  # Target angle in degrees
+gyro_sensitivity = 1.0  # Sensitivity factor for the gyro (depends on your sensor)
+
+
 def turn_left_internal():
-    # if direction == 0:
-    #     return
     publish_status("Turning left")
     stop_internal()
     control_left_wheels(1)
     control_right_wheels(-1)
 
 def turn_right_internal():
-    # if direction == 0:
-    #     return
+    # publish_status("Turning right")
+    # stop_internal()
+    # control_left_wheels(-1)
+    # control_right_wheels(1)
+    global current_angle, previous_time
+
     publish_status("Turning right")
     stop_internal()
     control_left_wheels(-1)
     control_right_wheels(1)
+
+    while current_angle < target_angle:
+        # Simulate reading gyro data
+        gyro_x, gyro_y, gyro_z = await read_gyro_data()  # Replace with actual gyro reading function
+
+        # Calculate the time difference
+        current_time = time.time()
+        dt = current_time - previous_time
+        previous_time = current_time
+
+        # Integrate the angular velocity to get the angle
+        angular_velocity_z = gyro_z * gyro_sensitivity
+        current_angle += angular_velocity_z * dt
+
+        # Print the gyro data and current angle
+        print(f"Gyro X: {gyro_x}, Gyro Y: {gyro_y}, Gyro Z: {gyro_z}, Angle: {current_angle:.2f}")
+
+        await asyncio.sleep(0.01)  # Small delay to simulate sensor reading interval
+
+    # Stop the turn when the target angle is reached
+    stop_internal()
+    publish_status("Turned 90 degrees!")
+    current_angle = 0.0  # Reset the angle
+
+async def read_gyro_data():
+    # Replace this with actual code to read gyro data
+    # For example, you might use an I2C library to read from an MPU6050 sensor
+    gyro_x = 0.0
+    gyro_y = 0.0
+    gyro_z = 1.0  # Simulated constant angular velocity
+    return gyro_x, gyro_y, gyro_z
 
 def back_to_center_internal():
     # if direction == 0:
