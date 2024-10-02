@@ -1,4 +1,5 @@
 from connection import publish_status
+import controller
 
 command_registry = {}
 
@@ -24,10 +25,12 @@ def handle_ultrasonic(distance):
             return
 
         publish_status(f"Obstacle detected! {distance} cm")
-        handle_control_message({"command": "set_speed", "speed": 0})
+        controller.set_speed(0)
+        publish_status("Stopping the car")
+        # handle_control_message({"command": "set_speed", "speed": 0})
 
         # handle_control_message({"command": "turn", "direction":"right"})
-        # avoiding_obstacle = True
+        avoiding_obstacle = True
     else:
         if avoiding_obstacle == False:
             return
