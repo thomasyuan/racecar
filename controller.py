@@ -3,7 +3,7 @@ import motor
 
 command_registry = {}
 
-TURN_THRESHOLD = 40
+TURN_THRESHOLD = 0.5
 avoiding_obstacle = False
 
 def register_command(command_name, handler):

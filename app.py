@@ -17,7 +17,7 @@ if __name__ == "__main__":
         while True:
             distance = ultrasonic.get_distance()
             if distance is not None:
-                print(f"Distance: {distance} cm")
+                print(f"Distance: {distance} m")
                 controller.handle_ultrasonic(distance)
             else:
                 print("Failed to get distance")
