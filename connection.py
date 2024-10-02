@@ -90,7 +90,7 @@ def my_publish_callback(envelope, status, message):
 
 def send_status_updates():
     while not stop_event.is_set():
-        publish_status("alive")
+        publish_public_announcement()
         time.sleep(10)
 
 def start():
