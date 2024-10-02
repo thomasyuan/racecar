@@ -9,6 +9,7 @@ from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory
 from utils import get_serial
 from utils import start_daemon_thread
+from datetime import datetime
 
 publish_key = 'pub-c-767218fd-fcf4-4285-83b5-69c03a17c076'
 subscribe_key = 'sub-c-e6322d6f-8cd7-4ff1-a4f1-8605f88f4487'
@@ -37,7 +38,7 @@ class MySubscribeCallback(SubscribeCallback):
 
     def message(self, pubnub, message):
         if message.channel == control_channel:
-            print(f"Received control message: {message.message}")
+            publish_status(f"Received control message: {message.message}")
             if isinstance(message.message, dict):
                 controller.handle_control_message(message.message)
             else:
@@ -50,13 +51,13 @@ class MySubscribeCallback(SubscribeCallback):
         elif message.channel == public_channel:
             print(f"Received public message: {message.message}")
             if isinstance(message.message, dict):
-                if message.message.get("query") == "login":
+                if message.message.get("query") == "online_cars":
                     publish_public_announcement()
             else:
                 try:
                     # Attempt to parse the message as JSON
                     parsed_message = json.loads(message.message)
-                    if parsed_message.get("query") == "login":
+                    if parsed_message.get("query") == "online_cars":
                         publish_public_announcement()
                 except json.JSONDecodeError:
                     print("Received invalid JSON message")
@@ -75,8 +76,10 @@ def publish_status(status_message):
     message = {"status": status_message}
     pubnub.publish().channel(status_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
-def publish_message(message):
-    pubnub.publish().channel(control_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
+def publish_status(message):
+    timestamp = datetime.now().strftime("%H:%M:%S:%f")[:-3]  # Format as hh:mm:ss:ms
+    status_message = {"status": f"{timestamp} {message}"}
+    pubnub.publish().channel(status_channel).message(status_message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
 def my_publish_callback(envelope, status, message):
     if not status.is_error():

@@ -25,23 +25,23 @@ sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN, pin_factory=factory)
 def get_distance():
     try:
         distance = sensor.distance * 100  # Convert to cm
-        return round(distance, 2)
+        return distance
     except Exception as e:
         print(f"Error getting distance: {e}")
         return None
 
-def get_average_distance(samples=5):
-    distances = []
-    for _ in range(samples):
-        distance = get_distance()
-        if distance is not None:
-            distances.append(distance)
-        time.sleep(0.05)  # Small delay between samples
+# def get_average_distance(samples=5):
+#     distances = []
+#     for _ in range(samples):
+#         distance = get_distance()
+#         if distance is not None:
+#             distances.append(distance)
+#         time.sleep(0.05)  # Small delay between samples
 
-    if distances:
-        return sum(distances) / len(distances)
-    else:
-        return None
+#     if distances:
+#         return sum(distances) / len(distances)
+#     else:
+#         return None
 
 def monitor_ultrasonic():
     while not stop_event.is_set():

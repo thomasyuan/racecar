@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 from controller import register_command
+from connection import publish_status
 
 # Define motor control pins
 in1 = 24
@@ -13,7 +14,7 @@ speed = 0
 
 def set_gear(message):
     gear = message.get("gear", 0)
-    print(f"Setting gear to {gear}")
+    publish_status(f"Setting gear to {gear}")
     global direction
     if gear == 'D':
         direction = 1
@@ -31,7 +32,7 @@ def set_gear(message):
 def set_speed(message):
     global speed
     speed = message.get("speed", 0)
-    print(f"Setting speed to {speed}")
+    publish_status(f"Setting speed to {speed}")
     if (speed > 100):
         speed = 100
     elif (speed < 0):
@@ -73,7 +74,7 @@ def control_right_wheels(direction):
 def turn_left_internal():
     if direction == 0:
         return
-    print("Turning left")
+    publish_status("Turning left")
     stop_internal()
     control_left_wheels(1)
     control_right_wheels(-1)
@@ -81,7 +82,7 @@ def turn_left_internal():
 def turn_right_internal():
     if direction == 0:
         return
-    print("Turning right")
+    publish_status("Turning right")
     stop_internal()
     control_left_wheels(-1)
     control_right_wheels(1)
@@ -89,11 +90,11 @@ def turn_right_internal():
 def back_to_center_internal():
     control_left_wheels(direction)
     control_right_wheels(direction)
-    
+
 def stop_internal():
-    print("center")
-    control_left_wheels(direction)
-    control_right_wheels(direction)
+    publish_status("Center")
+    control_left_wheels(0)
+    control_right_wheels(0)
 
 def set_speed_internal(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
