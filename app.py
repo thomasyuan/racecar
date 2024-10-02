@@ -21,7 +21,7 @@ if __name__ == "__main__":
                 controller.handle_ultrasonic(distance)
             else:
                 print("Failed to get distance")
-            time.sleep(interval)
+            time.sleep(0.03)
             pass  # Do nothing, just keep the main thread alive
     except KeyboardInterrupt:
         print("Exiting...")
