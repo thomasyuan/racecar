@@ -14,7 +14,7 @@ TRIG_PIN = 5  # GPIO 5
 ECHO_PIN = 6  # GPIO 6
 
 # Define the interval for reading the sensor in the monitoring loop
-MONITOR_READING_INTERVAL = 0.01
+MONITOR_READING_INTERVAL = 0.05
 
 # Create a stop event
 stop_event = threading.Event()
