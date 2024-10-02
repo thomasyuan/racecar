@@ -72,9 +72,9 @@ def publish_public_announcement():
     announcement = {"car_id": car_id, "status_channel": status_channel, "control_channel": control_channel}
     pubnub.publish().channel(public_channel).message(announcement).pn_async(lambda envelope, status: my_publish_callback(envelope, status, announcement))
 
-def publish_status(status_message):
-    message = {"status": status_message}
-    pubnub.publish().channel(status_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
+# def publish_status(status_message):
+#     message = {"status": status_message}
+#     pubnub.publish().channel(status_channel).message(message).pn_async(lambda envelope, status: my_publish_callback(envelope, status, message))
 
 def publish_status(message):
     timestamp = datetime.now().strftime("%H:%M:%S:%f")[:-3]  # Format as hh:mm:ss:ms
