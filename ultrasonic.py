@@ -44,7 +44,7 @@ def get_distance():
 #     else:
 #         return None
 
-def monitor_ultrasonic(interval):
+def monitor(interval):
     while True:
         distance = get_distance()
         if distance is not None:

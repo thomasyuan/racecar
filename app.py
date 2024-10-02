@@ -11,7 +11,7 @@ if __name__ == "__main__":
         motor.start()
 
 
-        ultrasonic.monitor_ultrasonic(0.03)
+        ultrasonic.monitor(0.03)
         # Main thread will handle other tasks or just keep the program running
         # while True:
         #     pass  # Do nothing, just keep the main thread alive
