@@ -24,8 +24,9 @@ sensor = DistanceSensor(echo=ECHO_PIN, trigger=TRIG_PIN, pin_factory=factory)
 
 def get_distance():
     try:
-        distance = sensor.distance * 100  # Convert to cm
-        return distance
+        return sensor.distance
+        # distance = sensor.distance * 100  # Convert to cm
+        # return distance
     except Exception as e:
         print(f"Error getting distance: {e}")
         return None
@@ -42,6 +43,16 @@ def get_distance():
 #         return sum(distances) / len(distances)
 #     else:
 #         return None
+
+def monitor_ultrasonic(interval):
+    while True:
+        distance = get_distance()
+        if distance is not None:
+            # print(f"Distance: {distance} cm")
+            controller.handle_ultrasonic(distance)
+        else:
+            print("Failed to get distance")
+        time.sleep(interval)
 
 def monitor_ultrasonic():
     while not stop_event.is_set():

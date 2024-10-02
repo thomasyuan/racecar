@@ -50,7 +50,7 @@ class MySubscribeCallback(SubscribeCallback):
                 except json.JSONDecodeError:
                     print("Received invalid JSON message")
         elif message.channel == public_channel:
-            print(f"Received public message: {message.message}")
+            publish_status(f"Received public message: {message.message}")
             if isinstance(message.message, dict):
                 if message.message.get("query") == "online_cars":
                     publish_public_announcement()
@@ -91,7 +91,7 @@ def my_publish_callback(envelope, status, message):
 def send_status_updates():
     while not stop_event.is_set():
         publish_status("alive")
-        time.sleep(3)
+        time.sleep(10)
 
 def start():
     stop_event.clear()

@@ -10,12 +10,11 @@ if __name__ == "__main__":
         # Start the ultrasonic monitoring thread
         ultrasonic.start()
 
-        gyro.start()
 
-        motor.start()
+        motor.monitor_ultrasonic(0.03)
         # Main thread will handle other tasks or just keep the program running
-        while True:
-            pass  # Do nothing, just keep the main thread alive
+        # while True:
+        #     pass  # Do nothing, just keep the main thread alive
     except KeyboardInterrupt:
         print("Exiting...")
         connection.exit()
