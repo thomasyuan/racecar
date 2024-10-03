@@ -28,15 +28,26 @@ def set_speed(message):
 
     set_speed_internal(speed)
 
-def turn(message):
+def spin(message):
     direction = message.get("direction")
-    publish_status(f"Cmd: turn {direction}")
+    publish_status(f"Cmd: spin {direction}")
     if direction == "left":
-        turn_left_internal()
+        spin_left_internal()
     elif direction == "right":
-        turn_right_internal()
-    elif direction == "center":
+        spin_right_internal()
+    elif direction == "stop":
         back_to_center_internal()
+
+def turn(message):
+    angle = message.get("angle")
+    publish_status(f"Cmd: turn {angle}")
+    if angle == 0:
+        set_speed_internal(speed)
+    elif angle < 0:
+        set_left_wheels_speed(speed / (90 - abs(angle)))
+    elif angle > 0:
+        set_right_wheels_speed(speed / (90 - abs(angle)))
+
 
 def set_gear_internal(gear):
     if gear == 'D':
@@ -49,13 +60,13 @@ def set_gear_internal(gear):
         control_left_wheels(0)
         control_right_wheels(0)
 
-def turn_left_internal():
+def spin_left_internal():
     publish_status("Turning left")
     stop_internal()
     control_left_wheels(1)
     control_right_wheels(-1)
 
-def turn_right_internal():
+def spin_right_internal():
     publish_status("Turning right")
     stop_internal()
     control_left_wheels(-1)
@@ -72,6 +83,12 @@ def stop_internal():
 
 def set_speed_internal(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
+    pwm2.ChangeDutyCycle(duty_cycle)
+
+def set_left_wheels_speed(duty_cycle):
+    pwm1.ChangeDutyCycle(duty_cycle)
+
+def set_right_wheels_speed(duty_cycle):
     pwm2.ChangeDutyCycle(duty_cycle)
 
 def control_left_wheels(direction):

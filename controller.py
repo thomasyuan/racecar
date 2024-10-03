@@ -29,7 +29,7 @@ def handle_ultrasonic(distance):
         # motor.set_speed_internal(0)
         motor.stop_internal()
         # motor.set_speed_internal(50)
-        motor.turn_right_internal()
+        motor.spin_right_internal()
         # handle_control_message({"command": "set_speed", "speed": 0})
         # handle_control_message({"command": "turn", "direction":"right"})
         avoiding_obstacle = True
@@ -44,6 +44,7 @@ def handle_ultrasonic(distance):
 
 
 # Register commands
-register_command("turn", motor.turn)
+register_command("turn_angle", motor.turn)
+register_command("spin", motor.spin)
 register_command("set_gear", motor.set_gear)
 register_command("set_speed", motor.set_speed)

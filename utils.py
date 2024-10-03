@@ -25,6 +25,7 @@ def get_ip_addresses():
         addresses = netifaces.ifaddresses(interface)
         if netifaces.AF_INET in addresses:
             for addr_info in addresses[netifaces.AF_INET]:
+                
                 ip_address = addr_info.get('addr')
                 if ip_address and ip_address != '127.0.0.1':
                     ip_addresses.append(ip_address)
