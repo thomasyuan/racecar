@@ -1,5 +1,6 @@
 import threading
 import socket
+import netifaces
 
 def get_serial():
     try:
@@ -17,6 +18,14 @@ def start_daemon_thread(target):
     thread.start()
     return thread
 
-def get_ip_address():
-    """Get the IP address of the current machine."""
-    return socket.gethostbyname(socket.gethostname())
+def get_ip_addresses():
+    """Get all IP addresses of the current machine."""
+    ip_addresses = []
+    for interface in netifaces.interfaces():
+        addresses = netifaces.ifaddresses(interface)
+        if netifaces.AF_INET in addresses:
+            for addr_info in addresses[netifaces.AF_INET]:
+                ip_address = addr_info.get('addr')
+                if ip_address and ip_address != '127.0.0.1':
+                    ip_addresses.append(ip_address)
+    return ip_addresses
