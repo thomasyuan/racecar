@@ -40,19 +40,28 @@ def spin(message):
     elif direction == "stop":
         back_to_center_internal()
 
+def get_direction_from_gear():
+    if gear == 'D':
+        return 1
+    elif gear == 'R':
+        return -1
+    else:
+        return 0
+
 def turn(message):
     angle = message.get("angle")
     publish_status(f"Cmd: turn {angle}")
     global left_spped_ratio, right_speed_ratio
+    dir = get_direction_from_gear()
     if angle == 0:
         left_spped_ratio = right_speed_ratio = 1
         back_to_center_internal()
     elif angle < 0:
         left_spped_ratio = abs(angle) / 90
-        control_left_wheels(-gear)
+        control_left_wheels(-dir)
     elif angle > 0:
         right_speed_ratio = abs(angle) / 90
-        control_right_wheels(-gear)
+        control_right_wheels(-dir)
 
     publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}")
     set_speed_internal(speed)
