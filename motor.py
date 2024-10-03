@@ -51,6 +51,7 @@ def turn(message):
     elif angle > 0:
         right_speed_ratio = 90 - abs(angle) / 90
 
+    publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}")
     set_speed_internal(speed)
 
 def set_gear_internal(gear):
