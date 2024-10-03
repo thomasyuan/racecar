@@ -74,7 +74,7 @@ def publish_public_announcement():
         "car_id": car_id,
         "status_channel": status_channel,
         "control_channel": control_channel,
-        "ip_address": utils.get_ip_address()}
+        "ip_address": utils.get_ip_addresses()}
     pubnub.publish().channel(public_channel).message(announcement).pn_async(lambda envelope, status: my_publish_callback(envelope, status, announcement))
 
 # def publish_status(status_message):
