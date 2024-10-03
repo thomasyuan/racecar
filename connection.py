@@ -2,19 +2,18 @@ import json
 import time
 import os
 import threading
+import utils
 
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNStatusCategory
-from utils import get_serial
-from utils import start_daemon_thread
 from datetime import datetime
 
 publish_key = 'pub-c-767218fd-fcf4-4285-83b5-69c03a17c076'
 subscribe_key = 'sub-c-e6322d6f-8cd7-4ff1-a4f1-8605f88f4487'
 
-car_id = get_serial()  # Unique identifier for the car
+car_id = utils.get_serial()  # Unique identifier for the car
 public_channel = "car_public"
 control_channel = f"car_control_{car_id}"
 status_channel = f"car_status_{car_id}"
@@ -71,7 +70,11 @@ pubnub.add_listener(MySubscribeCallback())
 pubnub.subscribe().channels([public_channel, control_channel]).execute()
 
 def publish_public_announcement():
-    announcement = {"car_id": car_id, "status_channel": status_channel, "control_channel": control_channel}
+    announcement = {
+        "car_id": car_id,
+        "status_channel": status_channel,
+        "control_channel": control_channel,
+        "ip_address": utils.get_ip_address()}
     pubnub.publish().channel(public_channel).message(announcement).pn_async(lambda envelope, status: my_publish_callback(envelope, status, announcement))
 
 # def publish_status(status_message):
@@ -101,7 +104,7 @@ def send_status_updates():
 
 def start():
     stop_event.clear()
-    start_daemon_thread(send_status_updates)
+    utils.start_daemon_thread(send_status_updates)
 
 def exit():
     stop_event.set()

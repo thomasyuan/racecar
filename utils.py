@@ -1,4 +1,5 @@
 import threading
+import socket
 
 def get_serial():
     try:
@@ -15,3 +16,7 @@ def start_daemon_thread(target):
     thread.daemon = True
     thread.start()
     return thread
+
+def get_ip_address():
+    """Get the IP address of the current machine."""
+    return socket.gethostbyname(socket.gethostname())
