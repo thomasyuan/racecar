@@ -1,6 +1,6 @@
 import connection
 import motor
-import ultrasonic
+# import ultrasonic
 import controller
 import time
 

@@ -44,9 +44,9 @@ def turn(message):
     if angle == 0:
         set_speed_internal(speed)
     elif angle < 0:
-        set_left_wheels_speed(speed / (90 - abs(angle)))
+        set_left_wheels_speed(speed * (90 - abs(angle)) / 90)
     elif angle > 0:
-        set_right_wheels_speed(speed / (90 - abs(angle)))
+        set_right_wheels_speed(speed * (90 - abs(angle)) / 90)
 
 
 def set_gear_internal(gear):
