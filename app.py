@@ -14,16 +14,16 @@ if __name__ == "__main__":
 
         # Main thread will handle other tasks or just keep the program running
         while True:
-            distance = ultrasonic.get_distance()
-            if distance is not None:
-                # print(f"Distance: {distance} m")
-                controller.handle_ultrasonic(distance)
-            else:
-                print("Failed to get distance")
-            time.sleep(0.03)
+            # distance = ultrasonic.get_distance()
+            # if distance is not None:
+            #     # print(f"Distance: {distance} m")
+            #     controller.handle_ultrasonic(distance)
+            # else:
+            #     print("Failed to get distance")
+            # time.sleep(0.03)
             pass  # Do nothing, just keep the main thread alive
     except KeyboardInterrupt:
         print("Exiting...")
         connection.exit()
-        ultrasonic.exit()
+        # ultrasonic.exit()
         motor.exit()
