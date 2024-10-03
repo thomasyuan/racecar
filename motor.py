@@ -46,12 +46,15 @@ def turn(message):
     global left_spped_ratio, right_speed_ratio
     if angle == 0:
         left_spped_ratio = right_speed_ratio = 1
+        back_to_center_internal()
     elif angle < 0:
-        left_spped_ratio = (90 - abs(angle)) / 90
+        left_spped_ratio = abs(angle) / 90
+        control_left_wheels(-gear)
     elif angle > 0:
-        right_speed_ratio = (90 - abs(angle)) / 90
+        right_speed_ratio = abs(angle) / 90
+        control_right_wheels(-gear)
 
-    publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}, speed: {speed}")
+    publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}")
     set_speed_internal(speed)
 
 def set_gear_internal(gear):
