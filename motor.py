@@ -9,6 +9,8 @@ in4 = 27
 en1 = 4
 en2 = 25
 speed = 0
+left_spped_ratio = 1
+right_speed_ratio = 1
 gear = 'P'
 
 def set_gear(message):
@@ -41,13 +43,15 @@ def spin(message):
 def turn(message):
     angle = message.get("angle")
     publish_status(f"Cmd: turn {angle}")
+    global left_spped_ratio, right_speed_ratio
     if angle == 0:
-        set_speed_internal(speed)
+        left_spped_ratio = right_speed_ratio = 1
     elif angle < 0:
-        set_left_wheels_speed(speed * (90 - abs(angle)) / 90)
+        left_spped_ratio = 90 - abs(angle) / 90
     elif angle > 0:
-        set_right_wheels_speed(speed * (90 - abs(angle)) / 90)
+        right_speed_ratio = 90 - abs(angle) / 90
 
+    set_speed_internal(speed)
 
 def set_gear_internal(gear):
     if gear == 'D':
@@ -82,8 +86,8 @@ def stop_internal():
     control_right_wheels(0)
 
 def set_speed_internal(duty_cycle):
-    pwm1.ChangeDutyCycle(duty_cycle)
-    pwm2.ChangeDutyCycle(duty_cycle)
+    pwm1.ChangeDutyCycle(duty_cycle * left_spped_ratio)
+    pwm2.ChangeDutyCycle(duty_cycle * right_speed_ratio)
 
 def set_left_wheels_speed(duty_cycle):
     pwm1.ChangeDutyCycle(duty_cycle)
