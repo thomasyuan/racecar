@@ -51,7 +51,7 @@ def turn(message):
     elif angle > 0:
         right_speed_ratio = 90 - abs(angle) / 90
 
-    publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}")
+    publish_status(f"Left speed ratio: {left_spped_ratio}, Right speed ratio: {right_speed_ratio}, speed: {speed}")
     set_speed_internal(speed)
 
 def set_gear_internal(gear):
@@ -87,6 +87,7 @@ def stop_internal():
     control_right_wheels(0)
 
 def set_speed_internal(duty_cycle):
+    publish_status(f"Setting speed to {duty_cycle}")
     pwm1.ChangeDutyCycle(duty_cycle * left_spped_ratio)
     pwm2.ChangeDutyCycle(duty_cycle * right_speed_ratio)
 
